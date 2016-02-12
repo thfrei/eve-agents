@@ -10,7 +10,8 @@ let options = {
   transports: [
     {
       type: 'amqp',
-      url: 'amqp://localhost'
+      //url: 'amqp://localhost'
+      host: 'dev.rabbitmq.com' //
     }
   ]
 };
