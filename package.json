@@ -9,7 +9,6 @@
   "author": "Thomas Frei",
   "license": "LGPL-3.0",
   "dependencies": {
-    "amqp": "^0.2.4",
     "bluebird": "^3.1.5",
     "co": "^4.6.0",
     "co-foreach": "^1.1.1",
@@ -24,5 +23,9 @@
     "random-js": "^1.0.8",
     "underscore": "^1.8.3"
   },
-  "repository": "https://github.com/thfrei/eve-co-soa"
+  "repository": "https://github.com/thfrei/eve-co-soa",
+  "devDependencies": {
+    "blue-tape": "^0.2.0",
+    "tape": "^4.4.0"
+  }
 }

@@ -1,17 +1,16 @@
 "use strict";
 
-const develop   = require('debug')('develop');
+const develop = require('debug')('develop');
 const Promise = require('bluebird');
-const DFAgent = require('./agents/DFAgent');
+let DFAgent = require('./agents/DFAgent');
 const _ = require('lodash');
 
-let options = {
-  id: 'DF',
+const options = {
+  id: 'DFUID', // TODO find out, why on localhost DF is no blocked?
   transports: [
     {
       type: 'amqp',
-      //url: 'amqp://localhost'
-      host: 'dev.rabbitmq.com' //
+      url: 'amqp://localhost'
     }
   ]
 };
@@ -19,7 +18,7 @@ let options = {
 let DF = new DFAgent(options);
 
 Promise.all([DF.ready]).then(function () {
-  console.log('agent ', 'DF', ' ready');
+  console.log('agent ', options.id, ' ready');
 
   DF.events.on('register', develop);
   DF.events.on('deRegister', develop);

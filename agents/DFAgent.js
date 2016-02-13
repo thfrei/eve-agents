@@ -1,6 +1,6 @@
 "use strict";
 
-const eve = require('evejs');
+let eve = require('evejs');
 
 const _ = require('lodash');
 const EventEmitter = require('events').EventEmitter;
@@ -41,13 +41,13 @@ DFAgent.prototype.rpcFunctions.register = function(params, from){
   console.log('Agent', from, 'wants to register itself. params:',params);
 
   if(!_.isArray(params.skills)){
-    let err = 'params.skills is not an array, please verify';
+    var err = 'params.skills is not an array, please verify';
     return {err: err};
   }
 
   // Check if agent is already registered
   if(_.find(this._agents, {agent: from})){
-    let err = from + ' has already registered';
+    var err = from + ' has already registered';
     console.log(err);
     return {err: err};
   }

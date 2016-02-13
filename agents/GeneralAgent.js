@@ -1,17 +1,12 @@
 "use strict";
 
-var _ = require('underscore');
-var Promise = require('bluebird');
-var co = require('co');
-var eve = require('evejs');
+const _ = require('underscore');
+const Promise = require('bluebird');
+let co = require('co');
+let eve = require('evejs');
 
-const EventEmitter = require('events');
-const util = require('util');
-function MyEmitter() {
-  EventEmitter.call(this);
-}
-util.inherits(MyEmitter, EventEmitter);
-var EE = new MyEmitter();
+let EventEmitter = require('events').EventEmitter;
+//var EE = new EventEmitter();
 
 function Agent(agent) {
   // execute super constructor and set agent-id
@@ -22,8 +17,13 @@ function Agent(agent) {
     transports: agent.transports
   });
 
+  this.skills = [];
+
   // set Directory Facilitator
   this.DF = agent.DF;
+
+  // EventEmitter
+  this.events = new EventEmitter();
 
   // load the RPC module
   this.rpc = this.loadModule('rpc', this.rpcFunctions, {timeout: 5*1000});
@@ -33,6 +33,35 @@ function Agent(agent) {
 }
 Agent.prototype = Object.create(eve.Agent.prototype);
 Agent.prototype.constructor = Agent; // not needed?
+
+// ==============================================================================
+// ACL ==========================================================================
+Agent.prototype.ACL = {};
+Agent.prototype.ACL.cfp = function(conversation, participant){
+  var EE = new EventEmitter();
+
+  var message = {method: 'cfp', params: {step: 'cfp', conversation: conversation}};
+  this.rpc.request(participant, message)
+    .then(function(reply){
+      if(reply.err) {
+        throw new Error('#cfp could not be performed: ' + reply.err + '\n message:' + JSON.stringify(message));
+      }
+      else {
+        if(reply.refuse){
+          EE.emit('refuse', reply);
+        } else if (reply.propose) {
+          EE.emit('propose', reply);
+        } else {
+          EE.emit('err', reply);
+        }
+      }
+    });
+
+  return EE;
+};
+// ACL END= =====================================================================
+// ==============================================================================
+
 
 // ==============================================================================
 // Services =====================================================================
@@ -47,13 +76,30 @@ Agent.prototype.rpcFunctions.cfp = function(params, from) {
 
 
 // ==============================================================================
-// Behaviour ====================================================================
+// Skill Handling ===============================================================
+Agent.prototype.skillAdd = function(name, func){
+  this.skills.push(name);
+  this.rpcFunctions[name] = func;
+};
+
+// Skill Handling End ===========================================================
+// ==============================================================================
+
+
+
+// ==============================================================================
+// Default Functions ============================================================
 Agent.prototype.register = function(){
   // Register skills
+  var self = this;
   return this.rpc.request(this.DF,{method: 'register', params: {skills: this.skills}})
     .then(function(reply){
       if(reply.err) throw new Error('#register could not be performed: ' + reply.err);
-      else console.log('#register successfull');
+      else {
+        let success = 'register successfull with:'+JSON.stringify(self.skills);
+        self.events.emit('registered', success);
+        return success;
+      }
     });
 };
 Agent.prototype.takeDown = function(){
@@ -61,20 +107,23 @@ Agent.prototype.takeDown = function(){
   this.rpc.request(this.DF, {method: 'deRegister'})
     .then(function(reply){
       if(reply.err) throw new Error('#deregister could not be performed' + err);
-      else console.log('#deregister successfull');
-      process.exit();
+      else {
+        console.log('takeDown now');
+        return Promise.resolve('#deregister successfull');
+      }
     });
 };
-Agent.prototype._searchSkill = function(skill){
+Agent.prototype.searchSkill = function(skill){
   return this.rpc.request(this.DF,{method: 'search', params: {skill: skill}})
     .then(function(reply){
-      if(reply.err) throw new Error('#search could not be performed' + err);
-      if(_.isEmpty(reply)) throw new Error('no skill was found');
-      console.log('#search skill:',skill,':',reply);
-      return reply;
-    })
-    .catch(function(err){
-      console.log('_searchSkill err',err);
+      if(reply.err) {
+        throw new Error('#search could not be performed' + err);
+      } else if(_.isEmpty(reply)) {
+        throw new Error('no skill was found');
+      } else {
+        console.log('#search skill:',skill,':',reply);
+        return Promise.resolve(reply);
+      }
     });
 };
 Agent.prototype._informOf = function(event){
