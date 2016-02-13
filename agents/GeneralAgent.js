@@ -17,7 +17,7 @@ function Agent(agent) {
     transports: agent.transports
   });
 
-  this.skills = [];
+  this._skills = [];
 
   // set Directory Facilitator
   this.DF = agent.DF;
@@ -68,7 +68,9 @@ Agent.prototype.ACL.cfp = function(conversation, participant){
 Agent.prototype.rpcFunctions = {};
 Agent.prototype.rpcFunctions.cfp = function(params, from) {
   console.log('#cfp - RPC from:', from, params);
-  // add relays
+  if(params.step == 'cfp'){
+
+  }
   return {err: 'not yet implemented'};
 };
 // Services End =================================================================
@@ -77,12 +79,35 @@ Agent.prototype.rpcFunctions.cfp = function(params, from) {
 
 // ==============================================================================
 // Skill Handling ===============================================================
+/**
+ * add a skill to an agent
+ * @param name [string] name of skill
+ * @param func [function] func(params, from)
+ */
 Agent.prototype.skillAdd = function(name, func){
-  this.skills.push(name);
+  this._skills.push(name);
   this.rpcFunctions[name] = func;
+};
+Agent.prototype.getSkills = function(){
+  return this._skills;
 };
 
 // Skill Handling End ===========================================================
+// ==============================================================================
+
+
+// ==============================================================================
+// Conversation Handling ========================================================
+///**
+// * add a skill to an agent
+// * @param name [string] name of skill
+// * @param func [function] func(params, from)
+// */
+//Agent.prototype.startConversation = function(name, func){
+//  this._skills.push(name);
+//  this.rpcFunctions[name] = func;
+//};
+// Conversation Handling End ====================================================
 // ==============================================================================
 
 
@@ -90,26 +115,27 @@ Agent.prototype.skillAdd = function(name, func){
 // ==============================================================================
 // Default Functions ============================================================
 Agent.prototype.register = function(){
-  // Register skills
+  // Register _skills
   var self = this;
-  return this.rpc.request(this.DF,{method: 'register', params: {skills: this.skills}})
+  return this.rpc.request(this.DF,{method: 'register', params: {skills: this._skills}})
     .then(function(reply){
       if(reply.err) throw new Error('#register could not be performed: ' + reply.err);
       else {
-        let success = 'register successfull with:'+JSON.stringify(self.skills);
-        self.events.emit('registered', success);
-        return success;
+        let ret = 'register successfull with:'+JSON.stringify(self._skills);
+        self.events.emit('registered', ret);
+        return ret;
       }
     });
 };
-Agent.prototype.takeDown = function(){
-  // Deregister skills
+Agent.prototype.deRegister = function(){
+  // Deregister _skills
   this.rpc.request(this.DF, {method: 'deRegister'})
     .then(function(reply){
       if(reply.err) throw new Error('#deregister could not be performed' + err);
       else {
-        console.log('takeDown now');
-        return Promise.resolve('#deregister successfull');
+        let ret = 'deRegister succesfull';
+        self.events.emit('deRegistered', ret);
+        return Promise.resolve(ret);
       }
     });
 };

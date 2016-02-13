@@ -47,8 +47,12 @@ Promise.all([Agent.ready]).then(function () {
     Agent.searchSkill('sell')
       .then((skills)=>{
         skills.forEach((skill)=>{
-          Agent.rpc.request(skill.agent, {method: 'sell', params: {foo: 'bar'}})
-            .then(develop);
+          //Agent.rpc.request(skill.agent, {method: 'sell', params: {foo: 'bar'}})
+          //  .then(develop);
+          var cfp = Agent.ACL.cfp('book-trading', skill.agent);
+          cfp.on('refuse', (m)=>{console.log('refuse',m);});
+          cfp.on('propose', (m)=>{console.log('propose',m);});
+          cfp.on('err', (m)=>{console.log('err',m);});
         })
       })
       .catch(develop);
@@ -58,7 +62,7 @@ Promise.all([Agent.ready]).then(function () {
 
 function takeDown(){
   // extra function is needed for closure on event
-  Agent.takeDown();
+  Agent.deRegister();
   process.exit();
 }
 

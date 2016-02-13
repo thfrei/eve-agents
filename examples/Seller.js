@@ -33,7 +33,6 @@ var agentOptions = {
 
 var Agent = new GeneralAgent(agentOptions);
 
-Agent.skillAdd('sell',console.log);
 
 // ========================================================================================================
 // Do not change below ====================================================================================
@@ -41,7 +40,11 @@ Promise.all([Agent.ready]).then(function () {
   // Tell how to take Down
   process.on('SIGINT', takeDown);
   process.on('uncaughtException', takeDown);
+  // Event-Listeners
   Agent.events.on('registered',develop);
+
+  // Skills
+  Agent.skillAdd('sell',console.log);
   // Register Skills
   Agent.register();
 
@@ -50,7 +53,7 @@ Promise.all([Agent.ready]).then(function () {
 
 function takeDown(){
   // extra function is needed for closure on event
-  Agent.takeDown();
+  Agent.deRegister();
   process.exit();
 }
 

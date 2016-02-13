@@ -20,8 +20,8 @@ let DF = new DFAgent(options);
 Promise.all([DF.ready]).then(function () {
   console.log('agent ', options.id, ' ready');
 
-  DF.events.on('register', develop);
-  DF.events.on('deRegister', develop);
+  DF.events.on('registered', develop);
+  DF.events.on('deRegistered', develop);
   DF.events.on('agentsChanged', (msg)=>{develop("agents Changed:\n",msg);});
 
 }).catch(console.log);
