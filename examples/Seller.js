@@ -44,7 +44,7 @@ Promise.all([Agent.ready]).then(function () {
   Agent.events.on('registered',develop);
 
   // Skills
-  Agent.skillAdd('sell',console.log);
+  Agent.skillAdd('sell', console.log);
   // Register Skills
   Agent.register();
 

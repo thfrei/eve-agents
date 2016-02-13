@@ -5,7 +5,7 @@ const Promise = require('bluebird');
 let co = require('co');
 let eve = require('evejs');
 
-let EventEmitter = require('events').EventEmitter;
+const EventEmitter = require('events').EventEmitter;
 //var EE = new EventEmitter();
 
 function Agent(agent) {
@@ -36,12 +36,16 @@ Agent.prototype.constructor = Agent; // not needed?
 
 // ==============================================================================
 // ACL ==========================================================================
-Agent.prototype.ACL = {};
-Agent.prototype.ACL.cfp = function(conversation, participant){
-  var EE = new EventEmitter();
+Agent.prototype.ACL = {}; // found the reason here - now closure is not working anymore
+Agent.prototype.ACL.cfp = function(objective, conversation, participant, closure){
+  let EE = new EventEmitter();
 
-  var message = {method: 'cfp', params: {step: 'cfp', conversation: conversation}};
-  this.rpc.request(participant, message)
+  var message = {method: 'cfp', params: {
+    step: 'cfp',
+    conversation: conversation,
+    objective: objective
+  }};
+  closure.rpc.request(participant, message) // TODO: somehow closure is necessary? why?
     .then(function(reply){
       if(reply.err) {
         throw new Error('#cfp could not be performed: ' + reply.err + '\n message:' + JSON.stringify(message));
@@ -69,7 +73,7 @@ Agent.prototype.rpcFunctions = {};
 Agent.prototype.rpcFunctions.cfp = function(params, from) {
   console.log('#cfp - RPC from:', from, params);
   if(params.step == 'cfp'){
-
+    params.conversation(params.objective);
   }
   return {err: 'not yet implemented'};
 };

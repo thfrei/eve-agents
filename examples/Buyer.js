@@ -49,10 +49,15 @@ Promise.all([Agent.ready]).then(function () {
         skills.forEach((skill)=>{
           //Agent.rpc.request(skill.agent, {method: 'sell', params: {foo: 'bar'}})
           //  .then(develop);
-          var cfp = Agent.ACL.cfp('book-trading', skill.agent);
-          cfp.on('refuse', (m)=>{console.log('refuse',m);});
-          cfp.on('propose', (m)=>{console.log('propose',m);});
-          cfp.on('err', (m)=>{console.log('err',m);});
+          try{
+            var cfp = Agent.ACL.cfp('HP', 'sell', skill.agent, Agent);
+            cfp.on('refuse', (m)=>{console.log('refuse',m);});
+            cfp.on('propose', (m)=>{console.log('propose',m);});
+            cfp.on('err', (m)=>{console.log('err',m);});
+          } catch(err){
+            console.log(err);
+          }
+
         })
       })
       .catch(develop);
