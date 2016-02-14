@@ -45,8 +45,12 @@ Promise.all([Agent.ready]).then(function () {
   Agent.events.on('registered',develop);
   // Skills
   Agent.skillAdd('sell', console.log);
+  Agent.skillAdd('cfp-book-trading', null);
   // Register Skills
-  Agent.register();
+  Agent.register()
+    .catch(console.log);
+
+
 
   try {
     var requestedBook = '';

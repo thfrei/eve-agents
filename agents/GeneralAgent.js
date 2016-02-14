@@ -126,15 +126,17 @@ Agent.prototype.register = function(){
 };
 Agent.prototype.deRegister = function(){
   // Deregister _skills
-  this.rpc.request(this.DF, {method: 'deRegister'})
-    .then(function(reply){
-      if(reply.err) throw new Error('#deregister could not be performed' + err);
-      else {
-        let ret = 'deRegister succesfull';
-        self.events.emit('deRegistered', ret);
-        return Promise.resolve(ret);
-      }
-    });
+  return new Promise((resolve, reject)=>{
+    this.rpc.request(this.DF, {method: 'deRegister'})
+      .then(function(reply){
+        if(reply.err) reject('#deregister could not be performed' + err);
+        else {
+          let ret = 'deRegister succesfull';
+          self.events.emit('deRegistered', ret);
+          return resolve(ret);
+        }
+      });
+  });
 };
 Agent.prototype.searchSkill = function(skill){
   return this.rpc.request(this.DF,{method: 'search', params: {skill: skill}})

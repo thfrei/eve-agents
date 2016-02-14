@@ -48,7 +48,7 @@ Promise.all([Agent.ready]).then(function () {
 
   function buyBook(book) {
     return new Promise(function(resolve, reject){
-      Agent.searchSkill('sell')
+      Agent.searchSkill('cfp-book-trading')
         .then((skills)=> {
           skills.forEach((skill)=> {
 
