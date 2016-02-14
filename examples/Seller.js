@@ -16,7 +16,7 @@ var EE = new MyEmitter();
 
 program
   .version('0.0.2')
-  .option('-a, --agent-name <name>', 'Agent name: e.g. Seller1', /^(\w*)$/i, 'Seller1')
+  .option('-a, --agent-name <name>', 'Agent name: e.g. Seller1', /^(\w*)$/i, 'Seller12')
   .option('-d, --directory-facilitator <df>', 'Agent name of the Directory Facilitator', /^(\w*)$/i, 'DFUID')
   .parse(process.argv);
 
@@ -34,19 +34,17 @@ var agentOptions = {
 
 var Agent = new GeneralAgent(agentOptions);
 
-
-// ========================================================================================================
-// Do not change below ====================================================================================
 Promise.all([Agent.ready]).then(function () {
   // Tell how to take Down
-  process.on('SIGINT', takeDown);
-  process.on('uncaughtException', takeDown);
+  //process.on('SIGINT', takeDown); // doesnt work?
+  //process.on('uncaughtException', takeDown); // doesnt work?
   // Event-Listeners
   Agent.events.on('registered',develop);
   // Skills
   Agent.skillAdd('sell', console.log);
   Agent.skillAdd('cfp-book-trading', null);
   // Register Skills
+  Agent.deRegister(); // TODO dirty fix - deRegistering on process.exit doesn't work
   Agent.register()
     .catch(console.log);
 
@@ -87,9 +85,11 @@ Promise.all([Agent.ready]).then(function () {
 
 }).catch(function(err){console.log('exe',err)});
 
-function takeDown(){
-  // extra function is needed for closure on event
-  Agent.deRegister();
-  process.exit();
-}
+// doesnt work?
+//function takeDown(){
+//  // extra function is needed for closure on event
+//  console.log('going down');
+//  Agent.deRegister().catch(console.log);
+//  process.exit();
+//}
 

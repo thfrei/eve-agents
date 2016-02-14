@@ -36,8 +36,6 @@ var agentOptions = {
 
 var Agent = new GeneralAgent(agentOptions);
 
-// ========================================================================================================
-// Do not change below ====================================================================================
 Promise.all([Agent.ready]).then(function () {
   // Tell how to take Down
   process.on('SIGINT', takeDown);
@@ -80,11 +78,12 @@ Promise.all([Agent.ready]).then(function () {
         })
         .catch(console.error);
     })
-  };
+  }
 
   // One time call
   //buyBook('Harry Potter').then(develop).catch(develop);
 
+  // With retry
   co(function* (){
     try{
       let book = yield retry(buyBook.bind(this,'Harry Potter'),
@@ -95,8 +94,6 @@ Promise.all([Agent.ready]).then(function () {
 
     console.log(book);
   });
-
-
 
 }).catch(function(err){console.log('exe',err)});
 

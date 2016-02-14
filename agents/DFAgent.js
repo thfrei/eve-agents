@@ -60,7 +60,7 @@ DFAgent.prototype.rpcFunctions.register = function(params, from){
 };
 
 DFAgent.prototype.rpcFunctions.deRegister = function(params, from){
-
+  console.log('deregistering', from, params);
   this._agents = _.reject(this._agents, {agent: from});
   this.events.emit('agentsChanged', this._agents);
   this.events.emit('deRegistered', from);

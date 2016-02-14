@@ -6,11 +6,12 @@ let DFAgent = require('./agents/DFAgent');
 const _ = require('lodash');
 
 const options = {
-  id: 'DFUID', // TODO find out, why on localhost DF is no blocked?
+  id: 'DFUID', // TODO find out, why on localhost DF is now blocked?
   transports: [
     {
       type: 'amqp',
       url: 'amqp://localhost'
+      //host: 'dev.rabbitmq.com'
     }
   ]
 };
