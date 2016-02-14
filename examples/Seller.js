@@ -47,7 +47,42 @@ Promise.all([Agent.ready]).then(function () {
   // Register Skills
   Agent.register();
 
-  Agent.listenCFP();
+  //Agent.listenCFP();
+
+
+  let request = undefined;
+  try {
+    var babble = require('babble');
+    Agent.listen('cfp-book-trading')
+      .listen(function (message, context) {
+        develop('what does he want?:', message);
+        request = message;
+        return message;
+      })
+      .tell(function (message, context) {
+        // Make an offer
+        develop('making an offer...');
+        if (Math.random() > 0.5) {
+          return 100;
+        } else {
+          return 50;
+        }
+      })
+      .listen(function (message, context) {
+        develop('listening to if he wants to buy or not', message);
+        return message;
+      })
+      .tell(function (message, context) {
+        develop('he wants to:', message);
+        if (message == 'buy') {
+          return {book: request, amount: 10};
+        } else {
+          // do nothing
+        }
+      });
+  } catch (err) {
+    develop(err);
+  }
 
 }).catch(function(err){console.log('exe',err)});
 

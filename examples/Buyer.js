@@ -59,7 +59,30 @@ Promise.all([Agent.ready]).then(function () {
           //  console.log(err);
           //}
 
-          Agent.callCFP(skill.agent);
+          //Agent.callCFP(skill.agent);
+
+          Agent.tell(skill.agent, 'cfp-book-trading')
+            .tell(function (message , context) {
+              // Want to buy book Harry Potter
+              return 'Harry Potter';
+            })
+            .listen(function (message, context) {
+              develop('Backoffer:', context , ': ' ,  message);
+              return message;
+            })
+            .tell(function (message, context) {
+              develop('deciding while telling', message, context);
+              let price = parseInt(message, 10);
+              if(price < 60) {
+                return 'buy';
+              } else {
+                return 'refuse';
+              }
+            })
+            .listen(function (message, context) {
+              develop('finally we get it:', message);
+            });
+
         })
       })
       .catch(develop);
