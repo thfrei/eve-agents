@@ -40,44 +40,44 @@ Agent.prototype.constructor = Agent; // not needed?
 
 // Babble
 // Buyer
-Agent.prototype.callCFP = function (to) {
-  this.tell(to, 'cfp-book-trading')
-    .tell(function (message , context) {
-      // Want to buy book Harry Potter
-      return 'Harry Potter';
-    })
-    .listen(function (message, context) {
-      develop('Backoffer:', context , ': ' ,  message);
-      return message;
-    })
-    .tell(function (message, context) {
-      develop('deciding while telling', message, context);
-      let price = parseInt(message, 10);
-      if(price < 60) return 'buy';
-      else return 'refuse';
-    });
-};
-// Seller
-Agent.prototype.listenCFP = function () {
-  this.listen('cfp-book-trading')
-      .listen(function (message, context) {
-        // What does the other want?
-        develop('CFP:', context , message);
-        return message;
-      })
-      .tell(function (message, context){
-        // Make an offer
-        if (Math.random() > 0.5) {
-          return 100;
-        } else {
-          return 50;
-        }
-      })
-      .listen(function (message, context) {
-        // Will he accept?
-        develop(message, context);
-      });
-}
+//Agent.prototype.callCFP = function (to) {
+//  this.tell(to, 'cfp-book-trading')
+//    .tell(function (message , context) {
+//      // Want to buy book Harry Potter
+//      return 'Harry Potter';
+//    })
+//    .listen(function (message, context) {
+//      develop('Backoffer:', context , ': ' ,  message);
+//      return message;
+//    })
+//    .tell(function (message, context) {
+//      develop('deciding while telling', message, context);
+//      let price = parseInt(message, 10);
+//      if(price < 60) return 'buy';
+//      else return 'refuse';
+//    });
+//};
+//// Seller
+//Agent.prototype.listenCFP = function () {
+//  this.listen('cfp-book-trading')
+//      .listen(function (message, context) {
+//        // What does the other want?
+//        develop('CFP:', context , message);
+//        return message;
+//      })
+//      .tell(function (message, context){
+//        // Make an offer
+//        if (Math.random() > 0.5) {
+//          return 100;
+//        } else {
+//          return 50;
+//        }
+//      })
+//      .listen(function (message, context) {
+//        // Will he accept?
+//        develop(message, context);
+//      });
+//}
 // Babble End
 
 // ACL ==========================================================================
