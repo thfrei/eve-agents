@@ -1,5 +1,8 @@
 "use strict";
 
+// we need to load the babble instance out from evejs, otherwise we cannot use babble.tell in a decision block;
+const babble = require('./../node_modules/evejs/node_modules/babble');
+//const babble = require('babble');
 const develop = require('debug')('develop');
 const _ = require('underscore');
 const Promise = require('bluebird');
@@ -31,6 +34,7 @@ function Agent(agent) {
 
   // babblify the agent
   this.extend('babble');
+  //this.babble = this.loadModule('babble');
 
   // connect to all transports provided by the system
   this.connect(eve.system.transports.getAll());
@@ -59,14 +63,17 @@ Agent.prototype.constructor = Agent; // not needed?
 //};
 //// Seller
 //Agent.prototype.listenCFP = function () {
-//  this.listen('cfp-book-trading')
+//  try {
+//    var requestedBook = '';
+//    this.listen('cfp-book-trading')
 //      .listen(function (message, context) {
-//        // What does the other want?
-//        develop('CFP:', context , message);
+//        develop('what does he want?:', message);
+//        requestedBook = message;
 //        return message;
 //      })
-//      .tell(function (message, context){
+//      .tell(function (message, context) {
 //        // Make an offer
+//        develop('making an offer...');
 //        if (Math.random() > 0.5) {
 //          return 100;
 //        } else {
@@ -74,10 +81,21 @@ Agent.prototype.constructor = Agent; // not needed?
 //        }
 //      })
 //      .listen(function (message, context) {
-//        // Will he accept?
-//        develop(message, context);
+//        develop('listening to if he wants to buy or not:', message);
+//        return message;
+//      })
+//      .tell(function (message, context) {
+//        develop('he wants to:', message);
+//        if (message == 'buy') {
+//          return {book: requestedBook, amount: 10};
+//        } else {
+//          // do nothing
+//        }
 //      });
-//}
+//  } catch (err) {
+//    develop(err);
+//  }
+//};
 // Babble End
 
 // ACL ==========================================================================

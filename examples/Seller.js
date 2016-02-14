@@ -1,6 +1,6 @@
 "use strict";
 
-const babble = require('babble');
+var babble = require('babble');
 const develop = require('debug')('develop');
 const Promise = require('bluebird');
 const program = require('commander');
@@ -48,15 +48,12 @@ Promise.all([Agent.ready]).then(function () {
   // Register Skills
   Agent.register();
 
-  //Agent.listenCFP();
-
-
-  let request = undefined;
   try {
+    var requestedBook = '';
     Agent.listen('cfp-book-trading')
       .listen(function (message, context) {
         develop('what does he want?:', message);
-        request = message;
+        requestedBook = message;
         return message;
       })
       .tell(function (message, context) {
@@ -69,25 +66,17 @@ Promise.all([Agent.ready]).then(function () {
         }
       })
       .listen(function (message, context) {
-        develop('listening to if he wants to buy or not', message);
+        develop('listening to if he wants to buy or not:', message);
         return message;
       })
-      //.tell(function (message, context) {
-      //  develop('he wants to:', message);
-      //  if (message == 'buy') {
-      //    return {book: request, amount: 10};
-      //  } else {
-      //    // do nothing
-      //  }
-      //});
-      .decide(function (message) {
-        console.log(message);
-        return message;
-      }, {
-          'buy': babble.tell({book: request, amount: 'trillions'}),
-          'refuse': babble.tell({youget: 'nothing'})
+      .tell(function (message, context) {
+        develop('he wants to:', message);
+        if (message == 'buy') {
+          return {book: requestedBook, amount: 10};
+        } else {
+          // do nothing
         }
-      );
+      });
   } catch (err) {
     develop(err);
   }
