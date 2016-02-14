@@ -43,25 +43,27 @@ Promise.all([Agent.ready]).then(function () {
   // Register Skills
   Agent.register();
 
-  setInterval(()=>{
+  setTimeout(()=>{
     Agent.searchSkill('sell')
       .then((skills)=>{
         skills.forEach((skill)=>{
           //Agent.rpc.request(skill.agent, {method: 'sell', params: {foo: 'bar'}})
           //  .then(develop);
-          try{
-            var cfp = Agent.ACL.cfp('HP', 'sell', skill.agent, Agent);
-            cfp.on('refuse', (m)=>{console.log('refuse',m);});
-            cfp.on('propose', (m)=>{console.log('propose',m);});
-            cfp.on('err', (m)=>{console.log('err',m);});
-          } catch(err){
-            console.log(err);
-          }
 
+          //try{
+          //  var cfp = Agent.cfp('HP', 'sell', skill.agent, Agent);
+          //  cfp.on('refuse', (m)=>{console.log('refuse',m);});
+          //  cfp.on('propose', (m)=>{console.log('propose',m);});
+          //  cfp.on('err', (m)=>{console.log('err',m);});
+          //} catch(err){
+          //  console.log(err);
+          //}
+
+          Agent.callCFP(skill.agent);
         })
       })
       .catch(develop);
-  },1000);
+  },0);
 
 }).catch(function(err){console.log('exe',err)});
 

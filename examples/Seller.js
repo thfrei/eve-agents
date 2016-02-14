@@ -42,12 +42,12 @@ Promise.all([Agent.ready]).then(function () {
   process.on('uncaughtException', takeDown);
   // Event-Listeners
   Agent.events.on('registered',develop);
-
   // Skills
   Agent.skillAdd('sell', console.log);
   // Register Skills
   Agent.register();
 
+  Agent.listenCFP();
 
 }).catch(function(err){console.log('exe',err)});
 

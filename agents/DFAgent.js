@@ -40,7 +40,7 @@ DFAgent.prototype.rpcFunctions = {};
 DFAgent.prototype.rpcFunctions.register = function(params, from){
   console.log('Agent', from, 'wants to register itself. params:',params);
 
-  if(!_.isArray(params._skills)){
+  if(!_.isArray(params.skills)){
     var err = 'params._skills is not an array, please verify';
     return {err: err};
   }
@@ -53,7 +53,7 @@ DFAgent.prototype.rpcFunctions.register = function(params, from){
   }
   else {
     this.events.emit('registered', from);
-    this._agents.push({agent: from, _skills: params._skills});
+    this._agents.push({agent: from, skills: params.skills});
     this.events.emit('agentsChanged', this._agents);
     return {status: 'ok', description: 'agent has been registered with _skills'+JSON.stringify(params._skills)};
   }
@@ -80,7 +80,7 @@ DFAgent.prototype.rpcFunctions.search = function(params, from) {
   // returns all skill-agent combinations with the required skill
   var found =  _.filter(this._agents, function(entry){
     // If skill can be found in _skills-array
-    if(_.indexOf(entry._skills, params.skill) != -1) {
+    if(_.indexOf(entry.skills, params.skill) != -1) {
       return true;
     }
   });

@@ -1,5 +1,6 @@
 "use strict";
 
+const develop = require('debug')('develop');
 const _ = require('underscore');
 const Promise = require('bluebird');
 let co = require('co');
@@ -28,16 +29,59 @@ function Agent(agent) {
   // load the RPC module
   this.rpc = this.loadModule('rpc', this.rpcFunctions, {timeout: 5*1000});
 
+  // babblify the agent
+  this.extend('babble');
+
   // connect to all transports provided by the system
   this.connect(eve.system.transports.getAll());
 }
 Agent.prototype = Object.create(eve.Agent.prototype);
 Agent.prototype.constructor = Agent; // not needed?
 
-// ==============================================================================
+// Babble
+// Buyer
+Agent.prototype.callCFP = function (to) {
+  this.tell(to, 'cfp-book-trading')
+    .tell(function (message , context) {
+      // Want to buy book Harry Potter
+      return 'Harry Potter';
+    })
+    .listen(function (message, context) {
+      develop('Backoffer:', context , ': ' ,  message);
+      return message;
+    })
+    .tell(function (message, context) {
+      develop('deciding while telling', message, context);
+      let price = parseInt(message, 10);
+      if(price < 60) return 'buy';
+      else return 'refuse';
+    });
+};
+// Seller
+Agent.prototype.listenCFP = function () {
+  this.listen('cfp-book-trading')
+      .listen(function (message, context) {
+        // What does the other want?
+        develop('CFP:', context , message);
+        return message;
+      })
+      .tell(function (message, context){
+        // Make an offer
+        if (Math.random() > 0.5) {
+          return 100;
+        } else {
+          return 50;
+        }
+      })
+      .listen(function (message, context) {
+        // Will he accept?
+        develop(message, context);
+      });
+}
+// Babble End
+
 // ACL ==========================================================================
-Agent.prototype.ACL = {}; // found the reason here - now closure is not working anymore
-Agent.prototype.ACL.cfp = function(objective, conversation, participant, closure){
+Agent.prototype.cfp = function (objective, conversation, participant) {
   let EE = new EventEmitter();
 
   var message = {method: 'cfp', params: {
@@ -45,7 +89,7 @@ Agent.prototype.ACL.cfp = function(objective, conversation, participant, closure
     conversation: conversation,
     objective: objective
   }};
-  closure.rpc.request(participant, message) // TODO: somehow closure is necessary? why?
+  this.rpc.request(participant, message) // TODO: somehow closure is necessary? why?
     .then(function(reply){
       if(reply.err) {
         throw new Error('#cfp could not be performed: ' + reply.err + '\n message:' + JSON.stringify(message));
@@ -64,10 +108,7 @@ Agent.prototype.ACL.cfp = function(objective, conversation, participant, closure
   return EE;
 };
 // ACL END= =====================================================================
-// ==============================================================================
 
-
-// ==============================================================================
 // Services =====================================================================
 Agent.prototype.rpcFunctions = {};
 Agent.prototype.rpcFunctions.cfp = function(params, from) {
@@ -78,10 +119,7 @@ Agent.prototype.rpcFunctions.cfp = function(params, from) {
   return {err: 'not yet implemented'};
 };
 // Services End =================================================================
-// ==============================================================================
 
-
-// ==============================================================================
 // Skill Handling ===============================================================
 /**
  * add a skill to an agent
@@ -97,10 +135,7 @@ Agent.prototype.getSkills = function(){
 };
 
 // Skill Handling End ===========================================================
-// ==============================================================================
 
-
-// ==============================================================================
 // Conversation Handling ========================================================
 ///**
 // * add a skill to an agent
@@ -112,11 +147,7 @@ Agent.prototype.getSkills = function(){
 //  this.rpcFunctions[name] = func;
 //};
 // Conversation Handling End ====================================================
-// ==============================================================================
 
-
-
-// ==============================================================================
 // Default Functions ============================================================
 Agent.prototype.register = function(){
   // Register _skills
@@ -164,5 +195,5 @@ Agent.prototype._informOf = function(event){
   });
 };
 // Behaviour End ================================================================
-// ==============================================================================
+
 module.exports = Agent;
