@@ -1,7 +1,7 @@
 "use strict";
 
 // we need to load the babble instance out from evejs, otherwise we cannot use babble.tell in a decision block;
-const babble = require('./../node_modules/evejs/node_modules/babble');
+//const babble = require('./../node_modules/evejs/node_modules/babble');
 //const babble = require('babble');
 const develop = require('debug')('develop');
 const _ = require('underscore');
@@ -41,62 +41,6 @@ function Agent(agent) {
 }
 Agent.prototype = Object.create(eve.Agent.prototype);
 Agent.prototype.constructor = Agent; // not needed?
-
-// Babble
-// Buyer
-//Agent.prototype.callCFP = function (to) {
-//  this.tell(to, 'cfp-book-trading')
-//    .tell(function (message , context) {
-//      // Want to buy book Harry Potter
-//      return 'Harry Potter';
-//    })
-//    .listen(function (message, context) {
-//      develop('Backoffer:', context , ': ' ,  message);
-//      return message;
-//    })
-//    .tell(function (message, context) {
-//      develop('deciding while telling', message, context);
-//      let price = parseInt(message, 10);
-//      if(price < 60) return 'buy';
-//      else return 'refuse';
-//    });
-//};
-//// Seller
-//Agent.prototype.listenCFP = function () {
-//  try {
-//    var requestedBook = '';
-//    this.listen('cfp-book-trading')
-//      .listen(function (message, context) {
-//        develop('what does he want?:', message);
-//        requestedBook = message;
-//        return message;
-//      })
-//      .tell(function (message, context) {
-//        // Make an offer
-//        develop('making an offer...');
-//        if (Math.random() > 0.5) {
-//          return 100;
-//        } else {
-//          return 50;
-//        }
-//      })
-//      .listen(function (message, context) {
-//        develop('listening to if he wants to buy or not:', message);
-//        return message;
-//      })
-//      .tell(function (message, context) {
-//        develop('he wants to:', message);
-//        if (message == 'buy') {
-//          return {book: requestedBook, amount: 10};
-//        } else {
-//          // do nothing
-//        }
-//      });
-//  } catch (err) {
-//    develop(err);
-//  }
-//};
-// Babble End
 
 // ACL ==========================================================================
 Agent.prototype.cfp = function (objective, conversation, participant) {

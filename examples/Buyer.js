@@ -1,8 +1,11 @@
 "use strict";
 
+const babble = require('babble');
 const develop = require('debug')('develop');
 const Promise = require('bluebird');
 const program = require('commander');
+const co = require('co');
+const retry = require('co-retry');
 let GeneralAgent = require('./../agents/GeneralAgent');
 
 const EventEmitter = require('events');
@@ -43,50 +46,57 @@ Promise.all([Agent.ready]).then(function () {
   // Register Skills
   Agent.register();
 
-  setTimeout(()=>{
-    Agent.searchSkill('sell')
-      .then((skills)=>{
-        skills.forEach((skill)=>{
-          //Agent.rpc.request(skill.agent, {method: 'sell', params: {foo: 'bar'}})
-          //  .then(develop);
+  function buyBook(book) {
+    return new Promise(function(resolve, reject){
+      Agent.searchSkill('sell')
+        .then((skills)=> {
+          skills.forEach((skill)=> {
 
-          //try{
-          //  var cfp = Agent.cfp('HP', 'sell', skill.agent, Agent);
-          //  cfp.on('refuse', (m)=>{console.log('refuse',m);});
-          //  cfp.on('propose', (m)=>{console.log('propose',m);});
-          //  cfp.on('err', (m)=>{console.log('err',m);});
-          //} catch(err){
-          //  console.log(err);
-          //}
+            Agent.tell(skill.agent, 'cfp-book-trading')
+              .tell(function (message, context) {
+                // Want to buy book Harry Potter
+                return book;
+              })
+              .listen(function (message, context) {
+                develop('Backoffer:', context, ': ', message);
+                return message;
+              })
+              .tell(function (message, context) {
+                develop('deciding while telling', message, context);
+                let price = parseInt(message, 10);
+                if (price < 60) {
+                  return 'buy';
+                } else {
+                  reject('the book is too expensive');
+                  return 'refuse';
+                }
+              })
+              .listen(function (message, context) {
+                develop('finally we get it:', message);
+                resolve(message);
+              });
 
-          //Agent.callCFP(skill.agent);
-
-          Agent.tell(skill.agent, 'cfp-book-trading')
-            .tell(function (message , context) {
-              // Want to buy book Harry Potter
-              return 'Harry Potter';
-            })
-            .listen(function (message, context) {
-              develop('Backoffer:', context , ': ' ,  message);
-              return message;
-            })
-            .tell(function (message, context) {
-              develop('deciding while telling', message, context);
-              let price = parseInt(message, 10);
-              if(price < 60) {
-                return 'buy';
-              } else {
-                return 'refuse';
-              }
-            })
-            .listen(function (message, context) {
-              develop('finally we get it:', message);
-            });
-
+          })
         })
-      })
-      .catch(develop);
-  },0);
+        .catch(console.error);
+    })
+  };
+
+  // One time call
+  //buyBook('Harry Potter').then(develop).catch(develop);
+
+  co(function* (){
+    try{
+      let book = yield retry(buyBook.bind(this,'Harry Potter'),
+        {retries: 100, interval: 500, factor: 1});
+    } catch (err) {
+      develop(err);
+    }
+
+    console.log(book);
+  });
+
+
 
 }).catch(function(err){console.log('exe',err)});
 

@@ -1,6 +1,6 @@
 "use strict";
 
-var babble = require('babble');
+const babble = require('babble');
 const develop = require('debug')('develop');
 const Promise = require('bluebird');
 const program = require('commander');
