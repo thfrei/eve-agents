@@ -55,9 +55,7 @@ Promise.all([Agent.ready]).then(function () {
       } else {
         console.log('book ', book, 'is not in stock anymore');
       }
-
     } catch(err) { develop('trycatch', err); }
-
   }
 
   co(function* (){
@@ -72,6 +70,7 @@ Promise.all([Agent.ready]).then(function () {
     console.log(book);
   });
 
+  // deRegister upon exiting
   process.on('SIGINT', function(){
     console.log('taking down...');
     Agent.deRegister();

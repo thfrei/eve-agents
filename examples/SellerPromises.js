@@ -22,8 +22,6 @@ var Agent = new GeneralAgent(agentOptions);
 
 Promise.all([Agent.ready]).then(function () {
   Agent.events.on('registered',console.log);
-  // Skills
-  Agent.skillAdd('cfp-book-trading', null);
 
   Agent.books = [
     {title: 'Harry Potter', price: Math.random()},
@@ -71,6 +69,7 @@ Promise.all([Agent.ready]).then(function () {
   Agent.register()
     .catch(console.log);
 
+  // deRegister upon exiting
   process.on('SIGINT', function(){
     console.log('taking down...');
     Agent.deRegister();
