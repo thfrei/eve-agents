@@ -22,6 +22,7 @@
     "evejs": "git+https://github.com/enmasseio/evejs.git#develop",
     "lodash": "^4.3.0",
     "mz": "^2.3.1",
+    "node-opcua": "0.0.51",
     "random-js": "^1.0.8",
     "underscore": "^1.8.3"
   },
