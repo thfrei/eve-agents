@@ -68,7 +68,6 @@ Promise.all([Agent.ready]).then(function () {
   }
 
   // Register Skills
-  Agent.deRegister(); // TODO dirty fix - deRegistering on process.exit doesn't work
   Agent.register()
     .catch(console.log);
 
