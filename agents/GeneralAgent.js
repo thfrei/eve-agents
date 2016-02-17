@@ -133,7 +133,7 @@ Agent.prototype.searchSkill = function(skill){
       } else if(_.isEmpty(reply)) {
         throw new Error('no skill was found');
       } else {
-        console.log('#search skill:',skill,':',reply);
+        develop('#search skill:',skill,':',reply);
         return Promise.resolve(reply);
       }
     });
@@ -141,7 +141,7 @@ Agent.prototype.searchSkill = function(skill){
 Agent.prototype.request = function(to, request) {
   return this.rpc.request(to, request)
     .then(function(reply){
-      console.log('#request ', to, request);
+      develop('#request ', to, request);
       return Promise.resolve(reply);
     })
     .catch(function(err){

@@ -21,7 +21,7 @@ var agentOptions = {
 var Agent = new GeneralAgent(agentOptions);
 
 Promise.all([Agent.ready]).then(function () {
-  Agent.events.on('registered',develop);
+  Agent.events.on('registered',console.log);
   // Skills
   Agent.skillAdd('cfp-book-trading', null);
 
@@ -59,10 +59,10 @@ Promise.all([Agent.ready]).then(function () {
     var self = Agent;
 
     return new Promise(function (resolve, reject) {
-      console.log(self.books);
       let bookIndex = _.findIndex(self.books, {title: params.title});
       let book = _.pullAt(self.books, bookIndex); // remove the book from array
       book.agent = Agent.id;
+      console.log('current stock', self.books);
       resolve(book);
     });
   }

@@ -29,7 +29,7 @@ Promise.all([Agent.ready]).then(function () {
 
   function* buyBook(book) {
     let sellers = yield Agent.searchSkill('sell');
-    console.log(sellers);
+    console.log('seller found', sellers);
 
     try {
       // Get offers
@@ -43,17 +43,17 @@ Promise.all([Agent.ready]).then(function () {
       offers = _.filter(offers, (offer) => {
         return _.isEmpty(offer.err);
       });
-      console.log('filtered offers', offers);
+      develop('filtered offers', offers);
 
       let bestOffer = _.minBy(offers, (offer) => {return offer.price});
-      console.log('bestOffer', bestOffer);
+      develop('bestOffer', bestOffer);
 
       if( bestOffer ) {
         let request = {method: 'buyBook', params: {title: bestOffer.title}};
         let result = yield Agent.request(bestOffer.agent, request);
         console.log(result);
       } else {
-        console.log('book is not in stock anymore');
+        console.log('book ', book, 'is not in stock anymore');
       }
 
     } catch(err) { develop('trycatch', err); }
