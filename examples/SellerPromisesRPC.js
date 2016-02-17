@@ -36,9 +36,9 @@ Promise.all([Agent.ready]).then(function () {
 
   Agent.skillAdd('sell', Promise.resolve('group sell'));
 
-  Agent.skillAdd('queryBook', queryBook);
-  function queryBook(params, sender){
-    develop('queryBook', params, sender);
+  Agent.skillAdd('query', query);
+  function query(params, sender){
+    develop('query', params, sender);
     var self = Agent;
 
     return new Promise(function(resolve, reject) {
@@ -53,9 +53,9 @@ Promise.all([Agent.ready]).then(function () {
     });
   }
 
-  Agent.skillAdd('buyBook', buyBook);
-  function buyBook(params, sender){
-    develop('buyBook', params, sender);
+  Agent.skillAdd('buy', buy);
+  function buy(params, sender){
+    develop('buy', params, sender);
     var self = Agent;
 
     return new Promise(function (resolve, reject) {

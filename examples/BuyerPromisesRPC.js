@@ -36,7 +36,7 @@ Promise.all([Agent.ready]).then(function () {
     try {
       // Get offers
       let offers = yield Promise.all(_.map(sellers, (seller) => {
-        return Agent.request(seller.agent, 'queryBook', {title: 'Harry Potter'});
+        return Agent.request(seller.agent, 'query', {title: book});
       }));
       console.log('offers', offers);
 
@@ -51,7 +51,7 @@ Promise.all([Agent.ready]).then(function () {
 
       var result;
       if( bestOffer ) {
-        result = yield Agent.request(bestOffer.agent, 'buyBook', {title: bestOffer.title});
+        result = yield Agent.request(bestOffer.agent, 'buy', {title: bestOffer.title});
       } else {
         result = 'book ' + book + 'is not in stock anymore';
       }
@@ -63,8 +63,8 @@ Promise.all([Agent.ready]).then(function () {
     try{
       //let book = yield retry(buyBook.bind(this,'Harry Potter'),
       //  {retries: 100, interval: 500, factor: 1});
-      let book = yield buyBook('Herry Potter');
-      console.log('buyBook', book);
+      let book = yield buyBook('Harry Potter');
+      console.log('bought', book);
     } catch (err) {
       develop('cocatch',err);
     }
