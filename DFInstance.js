@@ -1,5 +1,7 @@
 "use strict";
 
+process.env.DEBUG = 'develop';
+
 const develop = require('debug')('develop');
 const Promise = require('bluebird');
 let DFAgent = require('./agents/DFAgent');
