@@ -45,6 +45,10 @@ Promise.all([Agent.ready]).then(function () {
     });
   }
 
+  /**
+   * it _cannot_ work, since the seller will make a return call before the event listener will be registered.
+   */
+
   Agent.skillAdd('refuse', (params, sender) => {
     Agent.events.emit('refuse', '');
   });           // buyer
