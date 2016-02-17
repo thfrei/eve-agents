@@ -95,20 +95,7 @@ Agent.prototype.skillAdd = function(name, func){
 Agent.prototype.getSkills = function(){
   return this._skills;
 };
-
 // Skill Handling End ===========================================================
-
-// Conversation Handling ========================================================
-///**
-// * add a skill to an agent
-// * @param name [string] name of skill
-// * @param func [function] func(params, from)
-// */
-//Agent.prototype.startConversation = function(name, func){
-//  this._skills.push(name);
-//  this.rpcFunctions[name] = func;
-//};
-// Conversation Handling End ====================================================
 
 // Default Functions ============================================================
 Agent.prototype.register = function(){
@@ -161,7 +148,7 @@ Agent.prototype.request = function(to, request) {
       // RPC Timeout probably
       return Promise.resolve('RPC Timeout? err:'+err);
     });
-}
+};
 Agent.prototype._informOf = function(event){
   return new Promise(function(resolve){
     myEmitter.on(event, function(eventPayload){
