@@ -4,7 +4,7 @@ const babble = require('babble');
 const develop = require('debug')('develop');
 const Promise = require('bluebird');
 const program = require('commander');
-let GeneralAgent = require('./../agents/GeneralAgent');
+let GeneralAgent = require('./../../agents/GeneralAgent');
 
 const EventEmitter = require('events');
 const util = require('util');
@@ -41,13 +41,47 @@ Promise.all([Agent.ready]).then(function () {
   // Event-Listeners
   Agent.events.on('registered',develop);
   // Skills
-  Agent.skillAdd('sell', console.log);
   Agent.skillAdd('cfp-book-trading', null);
+
+  Agent.books = [
+    {title: 'Harry Potter', price: Math.random(), storage: 90},
+    {title: 'Faust', price: Math.random(), storage: 10},
+    {title: 'Kabale und Liebe', price: Math.random(), storage: 50}
+  ];
+
+  Agent.skillAdd('sell', sell);
+  function sell(params, sender) {
+    var self = this;
+    return new Promise(function(resolve, reject){
+      let book = _.find(self.books, {title: params.title});
+      console.log('book skill', book);
+      if ( book ) {
+        resolve(book);
+      } else {
+        resolve({err: 'no book found'});
+      }
+    });
+  }
+
+  Agent.skillAdd('queryBook', queryBook);
+  function queryBook(params, sender){
+    var self = this;
+    return new Promise(function(resolve, reject) {
+      console.log(self.books);
+      let book = _.find(self.books, {title: params.title});
+      console.log('queryBook,book found', book);
+      if (book) {
+        resolve(book);
+      } else {
+        resolve({err: 'no book found'});
+      }
+    });
+  }
+
   // Register Skills
   Agent.deRegister(); // TODO dirty fix - deRegistering on process.exit doesn't work
   Agent.register()
     .catch(console.log);
-
 
 
   try {

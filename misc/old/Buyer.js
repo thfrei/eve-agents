@@ -6,7 +6,7 @@ const Promise = require('bluebird');
 const program = require('commander');
 const co = require('co');
 const retry = require('co-retry');
-let GeneralAgent = require('./../agents/GeneralAgent');
+let GeneralAgent = require('./../../agents/GeneralAgent');
 
 const EventEmitter = require('events');
 const util = require('util');
@@ -63,10 +63,10 @@ Promise.all([Agent.ready]).then(function () {
                 develop('deciding while telling', message, context);
                 let price = parseInt(message, 10);
                 if (price < 60) {
-                  return 'buy';
+                  return Promise.resolve('buy');
                 } else {
                   reject('the book is too expensive');
-                  return 'refuse';
+                  return Promise.resolve('refuse');
                 }
               })
               .listen(function (message, context) {
@@ -78,6 +78,10 @@ Promise.all([Agent.ready]).then(function () {
         })
         .catch(console.error);
     })
+  }
+
+  function err(err){
+    console.log('err in babble',err);
   }
 
   // One time call

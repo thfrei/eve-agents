@@ -33,14 +33,13 @@ Agent.prototype.execute = function(func) {
     process.exit();
   }
 
-  Promise.all([self.agent.ready]).then(function () {
-    // Tell how to take Down
-    process.on('SIGINT', takeDown);
-    process.on('uncaughtException', takeDown);
-
-    func();
-
-  }).catch(function(err){console.log('afterReady',err)});
+  return Promise.all([self.agent.ready]).then(function () {
+      // Tell how to take Down
+      process.on('SIGINT', takeDown);
+      process.on('uncaughtException', takeDown);
+    })
+    .then(func.bind(self))
+    .catch(function(err){develop('afterReady',err)});
 };
 
 module.exports = Agent;
