@@ -60,7 +60,6 @@ Promise.all([Agent.ready]).then(function () {
 
   }
 
-  // With retry
   co(function* (){
     try{
       //let book = yield retry(buyBook.bind(this,'Harry Potter'),
@@ -72,7 +71,6 @@ Promise.all([Agent.ready]).then(function () {
 
     console.log(book);
   });
-
 
   process.on('SIGINT', function(){
     console.log('taking down...');
