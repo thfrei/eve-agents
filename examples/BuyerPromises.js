@@ -23,9 +23,6 @@ var agentOptions = {
 var Agent = new GeneralAgent(agentOptions);
 
 Promise.all([Agent.ready]).then(function () {
-  // Tell how to take Down
-  process.on('SIGINT', takeDown);
-  process.on('uncaughtException', takeDown);
   Agent.events.on('registered',develop);
   // Register Skills
   Agent.register();
@@ -35,17 +32,31 @@ Promise.all([Agent.ready]).then(function () {
     console.log(sellers);
 
     try {
-      //let offers = yield Promise.settle(_.map(sellers, (seller) => {
-      //  let request = {method: 'queryBook', params: {title: 'Harry Potter'}};
-      //  return Agent.request(seller.agent, request);
-      //}));
+      // Get offers
       let offers = yield Promise.all(_.map(sellers, (seller) => {
         let request = {method: 'queryBook', params: {title: 'Harry Potter'}};
         return Agent.request(seller.agent, request);
       }));
-      console.log(offers);
-    } catch(err) { console.log(err); }
+      console.log('offers', offers);
 
+      // filter the ones who do not sell
+      offers = _.filter(offers, (offer) => {
+        return _.isEmpty(offer.err);
+      });
+      console.log('filtered offers', offers);
+
+      let bestOffer = _.minBy(offers, (offer) => {return offer.price});
+      console.log('bestOffer', bestOffer);
+
+      if( bestOffer ) {
+        let request = {method: 'buyBook', params: {title: bestOffer.title}};
+        let result = yield Agent.request(bestOffer.agent, request);
+        console.log(result);
+      } else {
+        console.log('book is not in stock anymore');
+      }
+
+    } catch(err) { develop('trycatch', err); }
 
   }
 
@@ -62,11 +73,12 @@ Promise.all([Agent.ready]).then(function () {
     console.log(book);
   });
 
-}).catch(function(err){console.log('exe',err)});
 
-function takeDown(){
-  // extra function is needed for closure on event
-  Agent.deRegister();
-  process.exit();
-}
+  process.on('SIGINT', function(){
+    console.log('taking down...');
+    Agent.deRegister();
+    setTimeout(process.exit, 500); // wait for deregistering complete
+  });
+
+}).catch(function(err){console.log('exe',err)});
 

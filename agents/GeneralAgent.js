@@ -30,7 +30,7 @@ function Agent(agent) {
   this.events = new EventEmitter();
 
   // load the RPC module
-  this.rpc = this.loadModule('rpc', this.rpcFunctions, {timeout: 5*1000});
+  this.rpc = this.loadModule('rpc', this.rpcFunctions, {timeout: 2*1000});
 
   // babblify the agent
   this.extend('babble');
@@ -120,7 +120,7 @@ Agent.prototype.register = function(){
       else {
         let ret = 'register successfull with:'+JSON.stringify(self._skills);
         self.events.emit('registered', ret);
-        return ret;
+        return Promise.resolve(ret);
       }
     });
 };
@@ -134,7 +134,7 @@ Agent.prototype.deRegister = function(){
       else {
         let ret = 'deRegister succesfull';
         self.events.emit('deRegistered', ret);
-        return ret;
+        return Promise.resolve(ret);
       }
     });
 };
@@ -151,6 +151,17 @@ Agent.prototype.searchSkill = function(skill){
       }
     });
 };
+Agent.prototype.request = function(to, request) {
+  return this.rpc.request(to, request)
+    .then(function(reply){
+      console.log('#request ', to, request);
+      return Promise.resolve(reply);
+    })
+    .catch(function(err){
+      // RPC Timeout probably
+      return Promise.resolve('RPC Timeout? err:'+err);
+    });
+}
 Agent.prototype._informOf = function(event){
   return new Promise(function(resolve){
     myEmitter.on(event, function(eventPayload){

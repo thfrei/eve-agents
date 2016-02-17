@@ -21,24 +21,29 @@ var agentOptions = {
 var Agent = new GeneralAgent(agentOptions);
 
 Promise.all([Agent.ready]).then(function () {
-  // Event-Listeners
   Agent.events.on('registered',develop);
   // Skills
   Agent.skillAdd('cfp-book-trading', null);
 
   Agent.books = [
-    {title: 'Harry Potter', price: Math.random(), storage: 90},
-    {title: 'Faust', price: Math.random(), storage: 10},
-    {title: 'Kabale und Liebe', price: Math.random(), storage: 50}
+    {title: 'Harry Potter', price: Math.random()},
+    {title: 'Harry Potter', price: Math.random()},
+    {title: 'Faust', price: Math.random()},
+    {title: 'Faust', price: Math.random()},
+    {title: 'Faust', price: Math.random()},
+    {title: 'Kabale und Liebe', price: Math.random()}
   ];
 
-  Agent.skillAdd('sell', sell);
-  function sell(params, sender) {
+  Agent.skillAdd('sell', Promise.resolve('group sell'));
+
+  Agent.skillAdd('queryBook', queryBook);
+  function queryBook(params, sender){
+    develop('queryBook', params, sender);
     var self = Agent;
-    return new Promise(function(resolve, reject){
+    return new Promise(function(resolve, reject) {
       let book = _.find(self.books, {title: params.title});
-      console.log('book skill', book);
-      if ( book ) {
+      console.log('queryBook,book', book);
+      if ( !_.isEmpty(book) ) {
         book.agent = Agent.id;
         resolve(book);
       } else {
@@ -47,18 +52,17 @@ Promise.all([Agent.ready]).then(function () {
     });
   }
 
-  Agent.skillAdd('queryBook', queryBook);
-  function queryBook(params, sender){
+  Agent.skillAdd('buyBook', buyBook);
+  function buyBook(params, sender){
+    develop('buyBook', params, sender);
     var self = Agent;
-    return new Promise(function(resolve, reject) {
-      let book = _.find(self.books, {title: params.title});
-      console.log('queryBook,book', book);
-      if (book) {
-        book.agent = Agent.id;
-        resolve(book);
-      } else {
-        resolve({err: 'no book found'});
-      }
+
+    return new Promise(function (resolve, reject) {
+      console.log(self.books);
+      let bookIndex = _.findIndex(self.books, {title: params.title});
+      let book = _.pullAt(self.books, bookIndex); // remove the book from array
+      book.agent = Agent.id;
+      resolve(book);
     });
   }
 
@@ -66,5 +70,11 @@ Promise.all([Agent.ready]).then(function () {
   Agent.deRegister(); // TODO dirty fix - deRegistering on process.exit doesn't work
   Agent.register()
     .catch(console.log);
+
+  process.on('SIGINT', function(){
+    console.log('taking down...');
+    Agent.deRegister();
+    setTimeout(process.exit, 500); // wait for deregistering complete
+  });
 
 }).catch(function(err){console.log('exe',err)});
