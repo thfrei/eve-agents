@@ -40,11 +40,12 @@ Promise.all([Agent.ready]).then(function () {
   function queryBook(params, sender){
     develop('queryBook', params, sender);
     var self = Agent;
+
     return new Promise(function(resolve, reject) {
       let book = _.find(self.books, {title: params.title});
       console.log('queryBook,book', book);
       if ( !_.isEmpty(book) ) {
-        book.agent = Agent.id;
+        book.agent = self.id;
         resolve(book);
       } else {
         resolve({err: 'no book found'});
