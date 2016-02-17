@@ -138,15 +138,15 @@ Agent.prototype.searchSkill = function(skill){
       }
     });
 };
-Agent.prototype.request = function(to, request) {
-  return this.rpc.request(to, request)
+Agent.prototype.request = function(to, method, params) {
+  return this.rpc.request(to, {method: method, params: params})
     .then(function(reply){
-      develop('#request ', to, request);
+      develop('#request ', to, method, params);
       return Promise.resolve(reply);
     })
     .catch(function(err){
       // RPC Timeout probably
-      return Promise.resolve('RPC Timeout? err:'+err);
+      return Promise.resolve('RPC Timeout? Or Agent.request internal error. err='+err);
     });
 };
 Agent.prototype._informOf = function(event){

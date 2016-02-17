@@ -1,5 +1,7 @@
 "use strict";
 
+process.env.DEBUG = 'develop';
+
 const _ = require('lodash');
 const babble = require('babble');
 const develop = require('debug')('develop');
@@ -34,8 +36,7 @@ Promise.all([Agent.ready]).then(function () {
     try {
       // Get offers
       let offers = yield Promise.all(_.map(sellers, (seller) => {
-        let request = {method: 'queryBook', params: {title: 'Harry Potter'}};
-        return Agent.request(seller.agent, request);
+        return Agent.request(seller.agent, 'queryBook', {title: 'Harry Potter'});
       }));
       console.log('offers', offers);
 
@@ -48,13 +49,13 @@ Promise.all([Agent.ready]).then(function () {
       let bestOffer = _.minBy(offers, (offer) => {return offer.price});
       develop('bestOffer', bestOffer);
 
+      var result;
       if( bestOffer ) {
-        let request = {method: 'buyBook', params: {title: bestOffer.title}};
-        let result = yield Agent.request(bestOffer.agent, request);
-        console.log(result);
+        result = yield Agent.request(bestOffer.agent, 'buyBook', {title: bestOffer.title});
       } else {
-        console.log('book ', book, 'is not in stock anymore');
+        result = 'book ' + book + 'is not in stock anymore';
       }
+      return result;
     } catch(err) { develop('trycatch', err); }
   }
 
@@ -62,7 +63,8 @@ Promise.all([Agent.ready]).then(function () {
     try{
       //let book = yield retry(buyBook.bind(this,'Harry Potter'),
       //  {retries: 100, interval: 500, factor: 1});
-      let success = yield buyBook('Herry Potter');
+      let book = yield buyBook('Herry Potter');
+      console.log('buyBook', book);
     } catch (err) {
       develop('cocatch',err);
     }
