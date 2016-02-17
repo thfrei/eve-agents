@@ -1,5 +1,7 @@
 "use strict";
 
+process.env.DEBUG = 'develop';
+
 const _ = require('lodash');
 const babble = require('babble');
 const develop = require('debug')('develop');
@@ -32,38 +34,26 @@ Promise.all([Agent.ready]).then(function () {
     {title: 'Kabale und Liebe', price: Math.random()}
   ];
 
-  Agent.skillAdd('sell', Promise.resolve('group sell'));
+  Agent.skillAdd('sell', Promise.resolve('sell via cfp'));
 
-  Agent.skillAdd('queryBook', queryBook);
-  function queryBook(params, sender){
-    develop('queryBook', params, sender);
-    var self = Agent;
-
-    return new Promise(function(resolve, reject) {
-      let book = _.find(self.books, {title: params.title});
-      console.log('queryBook,book', book);
-      if ( !_.isEmpty(book) ) {
-        book.agent = self.id;
-        resolve(book);
-      } else {
-        resolve({err: 'no book found'});
-      }
-    });
-  }
-
-  Agent.skillAdd('buyBook', buyBook);
-  function buyBook(params, sender){
-    develop('buyBook', params, sender);
-    var self = Agent;
-
-    return new Promise(function (resolve, reject) {
-      let bookIndex = _.findIndex(self.books, {title: params.title});
-      let book = _.pullAt(self.books, bookIndex); // remove the book from array
-      book.agent = Agent.id;
-      console.log('current stock', self.books);
-      resolve(book);
-    });
-  }
+  // CFP Listeners
+  Agent.skillAdd('cfp', (params, sender) => {
+    let book = _.find(self.books, {title: params.title});
+    console.log(book);
+    if (book) {
+      Agent.request(sender, 'propose', book);
+    } else {
+      Agent.request(sender, 'refuse', {msg: 'not in stock'})
+    }
+    return 'ack';
+  });              // seller
+  Agent.skillAdd('refuse');           // buyer
+  Agent.skillAdd('propose');          // buyer
+  Agent.skillAdd('reject-proposal');  // seller
+  Agent.skillAdd('accept-proposal');  // seller
+  Agent.skillAdd('failure');          // buyer
+  Agent.skillAdd('inform-done');      // buyer
+  Agent.skillAdd('inform-result');    // buyer
 
   // Register Skills
   Agent.register()
