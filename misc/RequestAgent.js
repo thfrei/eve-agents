@@ -12,7 +12,7 @@ function RequestAgent(id) {
   // extend the agent with support for requests
   this.extend('request');
 
-  this.conversationTypes = [];
+  this._conversations = [];
 
   this.connect(eve.system.transports.getAll());
 }
@@ -28,7 +28,7 @@ RequestAgent.prototype.receive = function (from, message) {
   if ( !_.isString(message.conversation) ) {
     return Promise.reject('conversation must be a string');
   }
-  let conversation = _.find(this.conversationTypes, {conversation: message.conversation});
+  let conversation = _.find(this.getConversations(), {conversation: message.conversation});
   if ( conversation ) {
     //return conversation.handler(from, message.body);
     return conversation.handler.bind(this, from, message.body)(); //bind and execute
@@ -37,16 +37,25 @@ RequestAgent.prototype.receive = function (from, message) {
   }
 };
 
-RequestAgent.prototype.addConversationType = function(conversation, handler) {
+RequestAgent.prototype.addConversation = function(conversation, handler) {
 
   if( !_.isFunction(handler) ){
     throw new Error('handler must be a promise');
   }
 
   // check if it already exists --
-  this.conversationTypes.push({conversation: conversation, handler: handler}); // handler promise
+  this._conversations.push({conversation: conversation, handler: handler}); // handler promise
+};
 
-  console.log(this.conversationTypes);
+
+RequestAgent.prototype.getConversations = function(){
+  return this._conversations;
+};
+RequestAgent.prototype.getConversationNames = function(){
+  return _.map(this.conversationTypes, (conv) => {return conv.conversation;});
+};
+RequestAgent.prototype.getConversationHandlers = function(){
+  return _.map(this.conversationTypes, (conv) => {return conv.handler;});
 };
 
 /**

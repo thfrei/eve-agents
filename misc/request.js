@@ -1,19 +1,26 @@
+"use strict";
+
 var RequestAgent = require('./RequestAgent');
 
 // create two agents
 var agent1 = new RequestAgent('agent1');
 var agent2 = new RequestAgent('agent2');
 
-agent1.addConversationType('book-trading-cfp', bookTradingCFP);
+agent1.addConversation('book-trading-cfp', bookTradingCFP);
+agent2.addConversation('book-trading-propose', bookTradingCFP);
+agent2.addConversation('add', sum);
+
+function sum(from, message) {
+  return message.a + message.b;
+}
 
 function bookTradingCFP(from, message) {
-  "use strict";
   console.log(from, 'wants', message);
 
   return new Promise(function(res, rej){
     setTimeout(()=>{
       res('100');
-    }, 2*1000);
+    }, 500);
   });
 }
 
@@ -25,7 +32,11 @@ function bookTradingCFP(from, message) {
 
 agent2.ask('agent1', 'book-trading-cfp', 'hp')
   .then(function(reply) {
+    console.log('convTyp', this.getConversations());
     console.log('reply: ' + reply);
   })
   .catch(console.error);
 
+agent1.ask('agent2', 'add', {a:0.421234, b:0.532345})
+  .then(console.log)
+  .catch(console.error);
