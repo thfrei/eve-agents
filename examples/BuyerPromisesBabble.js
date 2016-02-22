@@ -31,12 +31,14 @@ Promise.all([Agent.ready]).then(function () {
 
   co(function* () {
     let conv = 'cfp-book-trading';
-    let obj = 'Harry Potter';
+    let obj = {title: 'Harry Potter'};
     let sellers = yield Agent.searchSkill(conv);
     console.log(sellers);
 
     // ask all sellers for book (conv, obj)
-    let propositions = yield Promise.all(_.map(sellers, (seller) => {return cfp(seller.agent, conv, obj);}));
+    let propositions = yield Promise.all(_.map(sellers, (seller) => {
+      return Agent.ACLcfp(seller.agent, conv, obj);
+    }));
     console.log('propositions', propositions);
 
     // Filter refused cfps
@@ -51,52 +53,10 @@ Promise.all([Agent.ready]).then(function () {
       console.log('bestOffer', bestOffer);
 
       // Tell seller with bestoffer to buy
-      let inform = yield acceptProposal(bestOffer.agent, conv+'-accept', obj);
+      let inform = yield Agent.ACLacceptProposal(bestOffer.agent, conv+'-accept', obj);
       console.log(inform);
     }
-  });
-
-  function cfp(seller, conversation, objective){
-    console.log('getP', seller);
-    return new Promise( (resolve, reject) => {
-      Agent.tell(seller, conversation)
-        .tell(function (message, context) {
-          return {title: objective};
-        })
-        .listen(function (message, context) {
-          develop('refuse/propose?', context, ': ', message);
-          return message;
-        })
-        .tell(function (message, context) {
-          if (message.refuse) {
-            develop('refused', message);
-            //let ret = message.refuse;
-            //ret.agent = context;
-            resolve(message);
-          }
-          if (message.propose) {
-            develop('propsed:', message);
-            let ret = message.propose;
-            ret.agent = context.from; //add seller name to propositions
-            resolve(ret);
-          }
-        });
-    });
-  }
-
-  function acceptProposal(seller, conversation, objective){
-    console.log('accP', seller);
-    return new Promise( (resolve, reject) => {
-      Agent.tell(seller, conversation)
-        .tell(function (message, context) {
-          return {title: objective};
-        })
-        .listen(function (message, context) {
-          develop('failure, done, result?', context, ': ', message);
-          resolve(message);
-        })
-    });
-  }
+  }).catch(console.error);
 
   // deRegister upon exiting
   process.on('SIGINT', function(){

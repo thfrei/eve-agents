@@ -158,4 +158,47 @@ Agent.prototype._informOf = function(event){
 };
 // Behaviour End ================================================================
 
+// Conversations
+Agent.prototype.ACLcfp = function(seller, conversation, objective){
+  console.log('getP', seller);
+  return new Promise( (resolve, reject) => {
+    this.tell(seller, conversation)
+      .tell(function (message, context) {
+        return objective;
+      })
+      .listen(function (message, context) {
+        develop('refuse/propose?', context, ': ', message);
+        return message;
+      })
+      .tell(function (message, context) {
+        if (message.refuse) {
+          develop('refused', message);
+          resolve(message);
+        }
+        if (message.propose) {
+          develop('propsed:', message);
+          let ret = message.propose;
+          ret.agent = context.from; //add seller name to propositions
+          resolve(ret);
+        }
+      });
+  });
+};
+
+Agent.prototype.ACLacceptProposal = function(seller, conversation, objective){
+  console.log('accP', seller);
+  return new Promise( (resolve, reject) => {
+    this.tell(seller, conversation)
+      .tell(function (message, context) {
+        return objective;
+      })
+      .listen(function (message, context) {
+        develop('failure, done, result?', context, ': ', message);
+        resolve(message);
+      })
+  });
+};
+
+
+
 module.exports = Agent;
