@@ -29,6 +29,33 @@ Promise.all([Agent.ready]).then(function () {
   // Register Skills
   Agent.register();
 
+  co(function* () {
+    let conv = 'cfp-book-trading';
+    let obj = 'Harry Potter';
+    let sellers = yield Agent.searchSkill(conv);
+    console.log(sellers);
+
+    // ask all sellers for book (conv, obj)
+    let propositions = yield Promise.all(_.map(sellers, (seller) => {return cfp(seller.agent, conv, obj);}));
+    console.log('propositions', propositions);
+
+    // Filter refused cfps
+    _.remove(propositions, (prop) => { if(prop.refuse) { return true; }});
+    console.log('clean propositions', propositions);
+
+    // Get offer with lowest price
+    let bestOffer = _.minBy(propositions, (offer) => {return offer.price});
+    if(typeof bestOffer == 'undefined') {
+      console.log('book is not available, nowhere');
+    } else {
+      console.log('bestOffer', bestOffer);
+
+      // Tell seller with bestoffer to buy
+      let inform = yield acceptProposal(bestOffer.agent, conv+'-accept', obj);
+      console.log(inform);
+    }
+  });
+
   function cfp(seller, conversation, objective){
     console.log('getP', seller);
     return new Promise( (resolve, reject) => {
@@ -71,24 +98,6 @@ Promise.all([Agent.ready]).then(function () {
     });
   }
 
-  co(function* () {
-    let conv = 'cfp-book-trading';
-    let obj = 'Harry Potter';
-    let sellers = yield Agent.searchSkill('cfp-book-trading');
-    console.log(sellers);
-    let propositions = yield Promise.all(_.map(sellers, (seller) => {return cfp(seller.agent, conv, obj);}));
-    console.log('propositions', propositions);
-
-    _.remove(propositions, (prop) => { if(prop.refuse) { return true; }});
-    console.log('clean propositions', propositions);
-
-    let bestOffer = _.minBy(propositions, (offer) => {return offer.price});
-    console.log('bestOffer', bestOffer);
-
-    let inform = yield acceptProposal(bestOffer.agent, conv+'-accept', obj);
-    console.log(inform);
-
-  });
   // deRegister upon exiting
   process.on('SIGINT', function(){
     console.log('taking down...');
