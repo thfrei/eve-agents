@@ -8,10 +8,11 @@ const develop = require('debug')('develop');
 const Promise = require('bluebird');
 const co = require('co');
 const retry = require('co-retry');
+const StateMachine = require('javascript-state-machine');
 let GeneralAgent = require('./../../agents/GeneralAgent');
 
-var agentOptions = {
-  //id: 'PromiseSeller',
+  var agentOptions = {
+    //id: 'PromiseSeller',
   DF: 'DFUID',
   transports: [
     {
@@ -24,9 +25,26 @@ var agentOptions = {
 
 var Agent = new GeneralAgent(agentOptions);
 
+Agent.fsm = StateMachine.create({
+  initial: 'ready',
+  events: [
+    { name: 'reserve',  from: 'ready',    to: 'reserved' },
+    { name: 'block',    from: 'reserved', to: 'blocked'    },
+    { name: 'unblock',  from: 'blocked',  to: 'reserved' },
+    { name: 'unreserve',from: 'reserved', to: 'ready'  },
+    { name: 'reset',    from: '*',        to: 'ready' },
+  ]}
+);
+
 Promise.all([Agent.ready]).then(function () {
   Agent.events.on('registered',console.log);
 
+  Agent.skillAdd('transport-negotiation', '');
+  Agent.skillAdd('transport-reserve', '');
+  Agent.skillAdd('transport-block', '');
+  Agent.skillAdd('transport-dispatch', '');
+  Agent.skillAdd('transport-unblock', '');
+  Agent.skillAdd('transport-unreserve', '');
   // Register Skills
   Agent.register()
     .catch(console.log);

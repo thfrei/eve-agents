@@ -44,7 +44,8 @@ Promise.all([Agent.ready]).then(function () {
     return {ok: 'agent was probably deleted'};
   }); // TODO implement
 
-  Agent.skillAdd('transport', ''); // TODO implement
+  Agent.skillAdd('cfp-transport', ''); // TODO implement negotiation
+  Agent.skillAdd('exe-transport', ''); // TODO implenent execution
 
   // Register Skills
   Agent.register()
