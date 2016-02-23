@@ -7,6 +7,7 @@ const babble = require('babble');
 const develop = require('debug')('develop');
 const Promise = require('bluebird');
 const co = require('co');
+const retry = require('co-retry');
 let GeneralAgent = require('./../../agents/GeneralAgent');
 
 var agentOptions = {
@@ -30,23 +31,39 @@ Promise.all([Agent.ready]).then(function () {
   Agent.register()
     .catch(console.log);
 
-  // TODO register at a Transport manager
-  co(function* () {
+  // register at one tranpsort manager [0] // if multiple tranpsort manager, it doesnt matter
+  let register = function* () {
     let transportManager = yield Agent.searchSkill('registerTransports');
-    console.log(transportManager);
 
-    Agent.request(transportManager[0].agent, 'registerTransports', {type: 'HandlingRobot'})
+    return Agent.request(transportManager[0].agent, 'registerTransports', {type: 'HandlingRobot', workingArea: '1000-2000'})
       .then(function(result){
-        console.log(result);
+        if(result.err) {
+          throw new Error(result.err);
+        } else {
+          console.log(result);
+        }
       });
+  };
 
+  co(function* (){
+    yield retry(register, {factor: 1});
   }).catch(console.error);
 
   // deRegister upon exiting
   process.on('SIGINT', function(){
     console.log('taking down...');
     Agent.deRegister();
-    setTimeout(process.exit, 500); // wait for deregistering complete
+
+    // Deregister at Transport Manager
+    co(function* () {
+      let transportManager = yield Agent.searchSkill('registerTransports');
+      return Agent.request(transportManager[0].agent, 'deRegisterTransports', '')
+        .then(function(result){
+          console.log(result);
+        });
+    });
+
+    setTimeout(process.exit, 1000); // wait for deregistering complete
   });
 
 }).catch(function(err){console.log('exe',err)});

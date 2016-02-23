@@ -23,15 +23,26 @@ var agentOptions = {
 var Agent = new GeneralAgent(agentOptions);
 
 Agent.position = [];
+Agent.transportAgents = [];
 
 Promise.all([Agent.ready]).then(function () {
   Agent.events.on('registered',console.log);
 
-  Agent.skillAdd('registerTransports', () => {
-    console.log('registerTransports called');
-    return {err: 'not yet implemented'};
+  Agent.skillAdd('registerTransports', (params, sender) => {
+    develop('registerTransports called', params, sender);
+
+    Agent.transportAgents.push({agent: sender, type: params.type, workingArea: params.workingArea});
+
+    console.log('all registered transport agents:', Agent.transportAgents);
+
+    return {ok: 'agent was registered'};
+  });
+  Agent.skillAdd('deRegisterTransports', (params, sender) => {
+    develop('deRegisterTransports called', params, sender);
+    _.remove(Agent.transportAgents, {agent: sender});
+    console.log('all registered transport agents:', Agent.transportAgents);
+    return {ok: 'agent was probably deleted'};
   }); // TODO implement
-  Agent.skillAdd('deRegisterTransports', ''); // TODO implement
 
   Agent.skillAdd('transport', ''); // TODO implement
 
