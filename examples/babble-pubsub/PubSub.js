@@ -27,6 +27,7 @@ var Agent = new GeneralAgent(agentOptions);
 Promise.all([Agent.ready]).then(function () {
   Agent.events.on('registered',develop);
 
+  // Add subscribe skill
   Agent.skillAdd('subscribe', (params, sender) => {
     if( !Agent.subscriptions ) {
       Agent.subscriptions = [];
@@ -39,10 +40,10 @@ Promise.all([Agent.ready]).then(function () {
   });
   Agent.register();
 
-  co(function* () {
+  let sub = co(function* () {
     let subscribeAgents = yield Agent.searchSkill('subscribe');
 
-    // Subscribe
+    // Subscribe to itself
     Agent.request(subscribeAgents[0].agent, 'subscribe', {topic: 'status'})
       .then(console.log);
     Agent.listen('sub-status')
@@ -50,16 +51,20 @@ Promise.all([Agent.ready]).then(function () {
         console.log('new update on sub-status', message, context);
       });
 
-    // Publish to all subscriptions
-    setTimeout(function(){
+    console.log(subscribeAgents);
+  }).catch(console.error);
+
+  let publish = co(function* () {
+      // Publish to all subscriptions (only itself in this case)
+    setInterval(function(){
       _.forEach(Agent.subscriptions, (sub) => {
         Agent.tell(sub.agent, 'sub-status')
           .tell('hallo welt');
       });
     },1000);
-
-    console.log(subscribeAgents);
   }).catch(console.error);
+
+
 
   // deRegister upon exiting
   process.on('SIGINT', function(){
