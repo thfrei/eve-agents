@@ -159,7 +159,7 @@ Agent.prototype._informOf = function(event){
 // Behaviour End ================================================================
 
 // Conversations
-Agent.prototype.ACLcfp = function(seller, conversation, objective){
+Agent.prototype.CAcfp = function(seller, conversation, objective){
   console.log('getP', seller);
   return new Promise( (resolve, reject) => {
     this.tell(seller, conversation)
@@ -185,10 +185,13 @@ Agent.prototype.ACLcfp = function(seller, conversation, objective){
   });
 };
 
-Agent.prototype.ACLacceptProposal = function(seller, conversation, objective){
+Agent.prototype.CAcfpAcceptProposal = function(seller, conversation, objective){
   console.log('accP', seller);
+
+  let conv = conversation + '-accept';
+
   return new Promise( (resolve, reject) => {
-    this.tell(seller, conversation)
+    this.tell(seller, conv)
       .tell(function (message, context) {
         return objective;
       })
@@ -199,6 +202,31 @@ Agent.prototype.ACLacceptProposal = function(seller, conversation, objective){
   });
 };
 
+Agent.prototype.CAcfpListener = function (conversation, doTell){
+  this.listen(conversation)
+    .listen(function (message, context) { // cfp (book-title)
+      develop('in cfp-book-trading:', message);
+      return message;
+    })
+    .tell(doTell);
+};
 
+Agent.prototype.CAcfpAcceptProposalListener = function (conversation, doAccept) {
+  let conv = conversation + '-accept';
+
+  this.listen(conv)
+    .listen(function (message, context) { // cfp (book-title)
+      develop('in ', conv ,':' , message);
+      return message;
+    })
+    .tell(doAccept);
+};
+
+Agent.prototype.skillAddCAcfpParticipant = function(conversation, cfpListener, acceptListener) {
+  this.skillAdd(conversation, '');
+
+  this.CAcfpListener(conversation, cfpListener);
+  this.CAcfpAcceptProposalListener(conversation, acceptListener);
+};
 
 module.exports = Agent;

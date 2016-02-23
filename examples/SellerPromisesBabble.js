@@ -34,62 +34,37 @@ Promise.all([Agent.ready]).then(function () {
     {title: 'Kabale und Liebe', price: Math.random()}
   ];
 
-  Agent.skillAdd('cfp-book-trading', '');
+  Agent.skillAddCAcfpParticipant('cfp-book-trading', getBook, sellBook);
 
-  var book;
-  Agent.listen('cfp-book-trading')
-    .listen(function (message, context) { // cfp (book-title)
-      develop('in cfp-book-trading:', message);
-      return message;
-    })
-    .tell(function (message, context) {
+  function getBook (message, context) {
+    develop(message, context);
+    let book = _.find(Agent.books, {title: message.title});
+    if(book) {
+      develop('offer:', book);
+      return {propose: book}; // propose
+    } else {
+      develop('not in stock');
+      return {refuse: 'not in stock'}; // refuse
+    }
+  }
+
+  function sellBook(message, context) {
+    return new Promise( (resolve, reject) => {
       develop(message, context);
-      book = _.find(Agent.books, {title: message.title});
+      let bookIndex = _.findIndex(Agent.books, {title: message.title});
+      let book = _.pullAt(Agent.books, bookIndex); // remove the book from array
+      book.agent = Agent.id;
+      console.log('current stock', Agent.books);
+
       if(book) {
-        develop('offer:', book);
-        return {propose: book}; // propose
+        develop('inform-result:', book);
+        resolve({informDone: book}); // propose
       } else {
-        develop('not in stock');
-        return {refuse: 'not in stock'}; // refuse
+        develop('book could not be fetched in stock');
+        resolve({failure: 'book could not be fetched in stock'}); // refuse
       }
-    })
-    .listen(function (message, context) {
-      develop('reject or accept', message);
-      return message;
-    })
-    .tell(function (message, context) {
-      if (message.rejectProposal) {
-        develop('rejected', message);
-      } else if (message.acceptProposal) {
-        develop('accepted', message);
-        return {informDone: book}
-      } else {
-        develop('not understood!');
-      }
-    });
-
-  Agent.listen('cfp-book-trading-accept')
-    .listen(function (message, context) { // cfp (book-title)
-      develop('in cfp-book-trading-accept:', message);
-      return message;
-    })
-    .tell(function (message, context) {
-      return new Promise( (resolve, reject) => {
-        develop(message, context);
-        let bookIndex = _.findIndex(Agent.books, {title: message.title});
-        let book = _.pullAt(Agent.books, bookIndex); // remove the book from array
-        book.agent = Agent.id;
-        console.log('current stock', Agent.books);
-
-        if(book) {
-          develop('inform-result:', book);
-          resolve({informDone: book}); // propose
-        } else {
-          develop('book could not be fetched in stock');
-          resolve({failure: 'book could not be fetched in stock'}); // refuse
-        }
-      }).catch(console.error);
-    });
+    }).catch(console.error);
+  }
 
   // Register Skills
   Agent.register()

@@ -37,7 +37,7 @@ Promise.all([Agent.ready]).then(function () {
 
     // ask all sellers for book (conv, obj)
     let propositions = yield Promise.all(_.map(sellers, (seller) => {
-      return Agent.ACLcfp(seller.agent, conv, obj);
+      return Agent.CAcfp(seller.agent, conv, obj);
     }));
     console.log('propositions', propositions);
 
@@ -53,7 +53,7 @@ Promise.all([Agent.ready]).then(function () {
       console.log('bestOffer', bestOffer);
 
       // Tell seller with bestoffer to buy
-      let inform = yield Agent.ACLacceptProposal(bestOffer.agent, conv+'-accept', obj);
+      let inform = yield Agent.CAcfpAcceptProposal(bestOffer.agent, conv, obj);
       console.log(inform);
     }
   }).catch(console.error);
