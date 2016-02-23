@@ -203,6 +203,12 @@ Agent.prototype.CAcfpAcceptProposal = function(seller, conversation, objective){
   });
 };
 
+/**
+ *
+ * @param conversation
+ * @param doTell Promise // promise for internal error handling, otherwise silent error-failing
+ * @constructor
+ */
 Agent.prototype.CAcfpListener = function (conversation, doTell){
   this.listen(conversation)
     .listen(function (message, context) { // cfp (book-title)
@@ -212,6 +218,12 @@ Agent.prototype.CAcfpListener = function (conversation, doTell){
     .tell(doTell);
 };
 
+/**
+ *
+ * @param conversation
+ * @param doAccept Promise // promise for internal error handling, otherwise silent error-failing
+ * @constructor
+ */
 Agent.prototype.CAcfpAcceptProposalListener = function (conversation, doAccept) {
   let conv = conversation + '-accept';
 
