@@ -30,17 +30,15 @@ Promise.all([Agent.ready]).then(function () {
   Agent.register()
     .catch(console.log);
 
-  // TODO register at the Transport manager
+  // TODO register at a Transport manager
   co(function* () {
     let transportManager = yield Agent.searchSkill('registerTransports');
     console.log(transportManager);
 
-    _.forEach(transportManager, (tM) => {
-      Agent.request(tM.agent, 'registerTransports', {type: 'HandlingRobot'})
-        .then(function(result){
-          console.log(result);
-        });
-    });
+    Agent.request(transportManager[0].agent, 'registerTransports', {type: 'HandlingRobot'})
+      .then(function(result){
+        console.log(result);
+      });
 
   }).catch(console.error);
 

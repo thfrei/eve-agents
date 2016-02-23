@@ -22,6 +22,8 @@ var agentOptions = {
 
 var Agent = new GeneralAgent(agentOptions);
 
+Agent.position = [];
+
 Promise.all([Agent.ready]).then(function () {
   Agent.events.on('registered',console.log);
 
