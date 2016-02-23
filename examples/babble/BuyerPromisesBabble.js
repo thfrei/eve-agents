@@ -8,7 +8,7 @@ const develop = require('debug')('develop');
 const Promise = require('bluebird');
 const co = require('co');
 const retry = require('co-retry');
-let GeneralAgent = require('./../agents/GeneralAgent');
+let GeneralAgent = require('./../../agents/GeneralAgent');
 
 var agentOptions = {
   id: 'BuyerPromises',
