@@ -10,7 +10,6 @@ let co = require('co');
 let eve = require('evejs');
 
 const EventEmitter = require('events').EventEmitter;
-//var EE = new EventEmitter();
 
 function Agent(agent) {
   // execute super constructor and set agent-id
@@ -128,7 +127,7 @@ Agent.prototype.searchSkill = function(skill){
   return this.rpc.request(this.DF,{method: 'search', params: {skill: skill}})
     .then(function(reply){
       if(reply.err) {
-        throw new Error('#search could not be performed' + err);
+        throw new Error('#search could not be performed' + reply.err);
       } else if(_.isEmpty(reply)) {
         throw new Error('no skill was found');
       } else {
@@ -155,13 +154,6 @@ Agent.prototype.request = function(to, method, params) {
       // RPC Timeout probably
       return Promise.resolve('RPC Timeout? Or Agent.request internal error. err='+err);
     });
-};
-Agent.prototype._informOf = function(event){
-  return new Promise(function(resolve){
-    myEmitter.on(event, function(eventPayload){
-      resolve(eventPayload);
-    });
-  });
 };
 // Behaviour End ================================================================
 
@@ -241,6 +233,5 @@ Agent.prototype.skillAddCAcfpParticipant = function(conversation, cfpListener, a
 // cfp end
 
 // Conversation Patterns End ====================================================
-
 
 module.exports = Agent;
