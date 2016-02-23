@@ -73,12 +73,9 @@ Agent.prototype.cfp = function (objective, conversation, participant) {
 
 // Services =====================================================================
 Agent.prototype.rpcFunctions = {};
-Agent.prototype.rpcFunctions.cfp = function(params, from) {
-  console.log('#cfp - RPC from:', from, params);
-  if(params.step == 'cfp'){
-    params.conversation(params.objective);
-  }
-  return {err: 'not yet implemented'};
+Agent.prototype.rpcFunctions.dummy = function(params, from) {
+  console.log('#dummy - RPC from:', from, params);
+  return {err: 'dummy not yet implemented'};
 };
 // Services End =================================================================
 
@@ -111,6 +108,7 @@ Agent.prototype.register = function(){
       }
     });
 };
+
 Agent.prototype.deRegister = function(){
   // Deregister _skills
   var self = this;
@@ -125,6 +123,7 @@ Agent.prototype.deRegister = function(){
       }
     });
 };
+
 Agent.prototype.searchSkill = function(skill){
   return this.rpc.request(this.DF,{method: 'search', params: {skill: skill}})
     .then(function(reply){
@@ -138,6 +137,14 @@ Agent.prototype.searchSkill = function(skill){
       }
     });
 };
+
+/**
+ * wrapper for rpc.request
+ * @param to
+ * @param method
+ * @param params
+ * @returns {*|Promise.<T>}
+ */
 Agent.prototype.request = function(to, method, params) {
   return this.rpc.request(to, {method: method, params: params})
     .then(function(reply){
@@ -158,7 +165,9 @@ Agent.prototype._informOf = function(event){
 };
 // Behaviour End ================================================================
 
-// Conversations
+// Conversation Patterns  =======================================================
+
+// cfp
 Agent.prototype.CAcfp = function(seller, conversation, objective){
   console.log('getP', seller);
   return new Promise( (resolve, reject) => {
@@ -228,5 +237,10 @@ Agent.prototype.skillAddCAcfpParticipant = function(conversation, cfpListener, a
   this.CAcfpListener(conversation, cfpListener);
   this.CAcfpAcceptProposalListener(conversation, acceptListener);
 };
+
+// cfp end
+
+// Conversation Patterns End ====================================================
+
 
 module.exports = Agent;
