@@ -25,6 +25,8 @@ var Agent = new GeneralAgent(agentOptions);
 Promise.all([Agent.ready]).then(function () {
   Agent.events.on('registered',console.log);
 
+  Agent.skillAddCAcfpParticipant('cfp-book-trading', getBook, sellBook);
+
   Agent.books = [
     {title: 'Harry Potter', price: Math.random()},
     {title: 'Harry Potter', price: Math.random()},
@@ -33,8 +35,6 @@ Promise.all([Agent.ready]).then(function () {
     {title: 'Faust', price: Math.random()},
     {title: 'Kabale und Liebe', price: Math.random()}
   ];
-
-  Agent.skillAddCAcfpParticipant('cfp-book-trading', getBook, sellBook);
 
   function getBook (message, context) {
     develop(message, context);
