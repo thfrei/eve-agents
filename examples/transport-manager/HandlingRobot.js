@@ -36,24 +36,66 @@ Agent.fsm = StateMachine.create({
   ]}
 );
 
+// discrete Positions that the Handling Robot can reach
+Agent.positions = [1,5,10,15,20,30,40,50,70,80,90,99];
+Agent.queue = [];
+
+Agent.move = function(position){
+  return new Promise( (resolve, reject) => {
+    // if position can be reached
+    if ( _.indexOf(Agent.positions, position) != -1 ) {
+      setTimeout(resolve, 2000);
+    } else {
+      reject({err: 'position cannot be reached'});
+    }
+  });
+};
+
 Promise.all([Agent.ready]).then(function () {
   Agent.events.on('registered',console.log);
 
-  Agent.skillAdd('transport-negotiation', '');
-  Agent.skillAdd('transport-reserve', '');
-  Agent.skillAdd('transport-block', '');
-  Agent.skillAdd('transport-dispatch', '');
-  Agent.skillAdd('transport-unblock', '');
-  Agent.skillAdd('transport-unreserve', '');
+  //Agent.skillAddCAcfpParticipant('exe-transport', reserve, move);
+  //function reserve (message, context) {
+  //  develop(message, context);
+  //  if(Agent.fsm.is('ready')){
+  //    develop('transport is ready. now we reserve it');
+  //    return {propose: 'transport was reserved'}
+  //  } else {
+  //    develop('transport is not ready, we cannot reserve');
+  //    return {refuse: 'transport cannot be reserved'}
+  //  }
+  //}
+  //function move(message, context) {
+  //  return new Promise( (resolve, reject) => {
+  //    develop(message, context);
+  //
+  //    setTimeout(function(){
+  //      resolve({informDone: 'arrived at position'});
+  //    });
+  //  }).catch(console.error);
+  //}
+  Agent.skillAdd('transport-reserve', function(params, sender) {
+    return {ok: 'reserved'};
+  });
+  Agent.skillAdd('transport-move', function(params, sender) {
+    setTimeout(()=>{
+      console.log('transport finished');
+      //Agent.events.emit('transport-end', {agent: sender, orderId: '1337'});
+      Agent.request(sender, 'transport-end', {orderId: 1233});
+    }, 1000);
+    return {ok: 'we start moving'}
+  });
+
   // Register Skills
   Agent.register()
     .catch(console.log);
+
 
   // register at one tranpsort manager [0] // if multiple tranpsort manager, it doesnt matter
   let register = function* () {
     let transportManager = yield Agent.searchSkill('registerTransports');
 
-    return Agent.request(transportManager[0].agent, 'registerTransports', {type: 'HandlingRobot', workingArea: '1000-2000'})
+    return Agent.request(transportManager[0].agent, 'registerTransports', {type: 'HandlingRobot', workingArea: Agent.positions})
       .then(function(result){
         if(result.err) {
           throw new Error(result.err);
@@ -64,7 +106,8 @@ Promise.all([Agent.ready]).then(function () {
   };
 
   co(function* (){
-    yield retry(register, {factor: 1});
+    //yield retry(register, {factor: 1});
+    yield register();
   }).catch(console.error);
 
   // deRegister upon exiting
@@ -85,3 +128,5 @@ Promise.all([Agent.ready]).then(function () {
   });
 
 }).catch(function(err){console.log('exe',err)});
+
+module.exports = Agent;

@@ -22,27 +22,11 @@ let Agent = new GeneralAgent(agentOptions);
 Agent.ready.then(()=>{
 
   test('register', (t)=>{
-    return Agent.register().then((msg)=>{
-        t.assert(msg);
-      })
-      .catch((err)=>{
-        t.fail(err);
-      })
+    return Agent.register();
   });
 
-  test('deRegister', (t)=>{
-    t.fail('not implemented');
-    t.end();
+  test('deRegister', (t)=> {
+    return Agent.deRegister();
   });
-
-  test('takeDown', (t)=>{
-    process.on('exit', ()=>{
-      t.pass('process was exited');
-    });
-    return Agent.takeDown()
-      .then(()=>{
-      });
-    t.end();
-  })
-
 });
+
