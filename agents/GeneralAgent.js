@@ -235,6 +235,12 @@ Agent.prototype.CAcfpAcceptProposalListener = function (conversation, doAccept) 
     .tell(doAccept);
 };
 
+/**
+ *
+ * @param conversation
+ * @param cfpListener function(message, context)
+ * @param acceptListener function(message, context)
+ */
 Agent.prototype.skillAddCAcfpParticipant = function(conversation, cfpListener, acceptListener) {
   this.skillAdd(conversation, '');
 
@@ -243,6 +249,40 @@ Agent.prototype.skillAddCAcfpParticipant = function(conversation, cfpListener, a
 };
 
 // cfp end
+
+Agent.prototype.CArequest = function (participant, conversation, objective){
+  console.log('CArequest', participant);
+  return new Promise( (resolve, reject) => {
+    this.tell(participant, conversation)
+      .tell(function (message, context) {
+        return objective;
+      })
+      .listen(function (message, context) {
+        develop('CArequest inform/failure?', context, ': ', message);
+        return message;
+      })
+      .tell(function (message, context) {
+        if (message.failure) {
+          develop('failure', message.failure);
+          reject(message.failure);
+        }
+        if (message.inform) {
+          develop('inform:', message);
+          let ret = message.inform;
+          ret.agent = context.from; //add seller name to propositions
+          resolve(ret);
+        }
+      });
+  });
+};
+Agent.prototype.CArequestParticipant = function (conversation, executeRequest) {
+  this.listen(conversation)
+    .listen(function (message, context) { // cfp (book-title)
+      develop('#CArequestParticipant', message);
+      return message;
+    })
+    .tell(executeRequest);
+};
 
 // Conversation Patterns End ====================================================
 

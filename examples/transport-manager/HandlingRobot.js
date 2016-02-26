@@ -6,9 +6,9 @@ const _ = require('lodash');
 const babble = require('babble');
 const develop = require('debug')('develop');
 const Promise = require('bluebird');
+const uuid = require('uuid-v4');
 const co = require('co');
 const retry = require('co-retry');
-const StateMachine = require('javascript-state-machine');
 let GeneralAgent = require('./../../agents/GeneralAgent');
 
   var agentOptions = {
@@ -25,25 +25,16 @@ let GeneralAgent = require('./../../agents/GeneralAgent');
 
 var Agent = new GeneralAgent(agentOptions);
 
-Agent.fsm = StateMachine.create({
-  initial: 'ready',
-  events: [
-    { name: 'reserve',  from: 'ready',    to: 'reserved' },
-    { name: 'block',    from: 'reserved', to: 'blocked'    },
-    { name: 'unblock',  from: 'blocked',  to: 'reserved' },
-    { name: 'unreserve',from: 'reserved', to: 'ready'  },
-    { name: 'reset',    from: '*',        to: 'ready' },
-  ]}
-);
-
 // discrete Positions that the Handling Robot can reach
 Agent.positions = [1,5,10,15,20,30,40,50,70,80,90,99];
-Agent.queue = [];
+Agent.taskList = [];
 
 Agent.move = function(position){
   return new Promise( (resolve, reject) => {
     // if position can be reached
     if ( _.indexOf(Agent.positions, position) != -1 ) {
+      console.log('!!!!!!!!!!!!!! ==== moving... 1s');
+
       setTimeout(resolve, 2000);
     } else {
       reject({err: 'position cannot be reached'});
@@ -54,77 +45,59 @@ Agent.move = function(position){
 Promise.all([Agent.ready]).then(function () {
   Agent.events.on('registered',console.log);
 
-  //Agent.skillAddCAcfpParticipant('exe-transport', reserve, move);
-  //function reserve (message, context) {
-  //  develop(message, context);
-  //  if(Agent.fsm.is('ready')){
-  //    develop('transport is ready. now we reserve it');
-  //    return {propose: 'transport was reserved'}
-  //  } else {
-  //    develop('transport is not ready, we cannot reserve');
-  //    return {refuse: 'transport cannot be reserved'}
-  //  }
-  //}
-  //function move(message, context) {
-  //  return new Promise( (resolve, reject) => {
-  //    develop(message, context);
-  //
-  //    setTimeout(function(){
-  //      resolve({informDone: 'arrived at position'});
-  //    });
-  //  }).catch(console.error);
-  //}
-  Agent.skillAdd('transport-reserve', function(params, sender) {
-    return {ok: 'reserved'};
-  });
-  Agent.skillAdd('transport-move', function(params, sender) {
-    setTimeout(()=>{
-      console.log('transport finished');
-      //Agent.events.emit('transport-end', {agent: sender, orderId: '1337'});
-      Agent.request(sender, 'transport-end', {orderId: 1233});
-    }, 1000);
-    return {ok: 'we start moving'}
-  });
+  //Agent.skillAdd('cfp-transport', Promise.reject('listener agent'));
+  Agent.skillAddCAcfpParticipant('cfp-transport', calculatePrice, reserveTransport);
+  Agent.register();
+  function calculatePrice (message, context) {
+    develop('calculatePrice', message, context);
+    if(_.isEmpty(Agent.taskList)){
+      return {propose: {price: Math.random()}};
+    } else {
+      return {refuse: 'transport is already reserved. wait for completion'};
+    }
 
-  // Register Skills
-  Agent.register()
-    .catch(console.log);
-
-
-  // register at one tranpsort manager [0] // if multiple tranpsort manager, it doesnt matter
-  let register = function* () {
-    let transportManager = yield Agent.searchSkill('registerTransports');
-
-    return Agent.request(transportManager[0].agent, 'registerTransports', {type: 'HandlingRobot', workingArea: Agent.positions})
-      .then(function(result){
-        if(result.err) {
-          throw new Error(result.err);
-        } else {
-          console.log(result);
+  }
+  Agent.events.on('dispatch', dispatch);
+  function reserveTransport (message, context) {
+    develop('reserveTransport', message, context);
+    if(_.isEmpty(Agent.taskList)){
+      return {failure: 'cannot reserve. transport is already reserved. '};
+    } else {
+      let task = {
+        orderId: message.orderId,
+        taskId: uuid(),
+        task: {
+          from: message.from,
+          to: message.to
         }
-      });
-  };
+      };
+      Agent.taskList.push(task);
+      develop('task is now in tasklist:', Agent.taskList);
+      Agent.events.emit('dispatch', task);
+      develop('dispatched!');
+      return {informDone: task};
+    }
+  }
+  function dispatch (task) {
+    co(function* (){
+      yield Agent.move(task.task.from.position);
+      yield requestGive(task.task.from.agent);
+      yield Agent.move(task.task.to.position);
+      yield requestTake(task.task.to.agent);
+    }).catch((err) => {console.error('dispatch',err);});
+  }
+
+
 
   co(function* (){
-    //yield retry(register, {factor: 1});
-    yield register();
+    // Main control flow behaviour
   }).catch(console.error);
 
   // deRegister upon exiting
   process.on('SIGINT', function(){
     console.log('taking down...');
     Agent.deRegister();
-
-    // Deregister at Transport Manager
-    co(function* () {
-      let transportManager = yield Agent.searchSkill('registerTransports');
-      return Agent.request(transportManager[0].agent, 'deRegisterTransports', '')
-        .then(function(result){
-          console.log(result);
-        });
-    });
-
-    setTimeout(process.exit, 1000); // wait for deregistering complete
+    setTimeout(process.exit, 500); // wait for deregistering complete
   });
 
 }).catch(function(err){console.log('exe',err)});

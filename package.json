@@ -27,7 +27,10 @@
     "mz": "^2.3.1",
     "node-opcua": "0.0.51",
     "random-js": "^1.0.8",
-    "underscore": "^1.8.3"
+    "requirish": "^0.3.0",
+    "underscore": "^1.8.3",
+    "uuid-v4": "^0.1.0",
+    "yargs": "^4.1.0"
   },
   "repository": "https://github.com/thfrei/eve-agents",
   "devDependencies": {

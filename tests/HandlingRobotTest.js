@@ -36,47 +36,6 @@ Agent.ready.then(()=>{
     });
   });
 
-  test('reserve a transporter', (t) => {
-    return Agent.searchSkill('transport-reserve').
-      then((agents) => {
-        return agents[0];
-      })
-      .then((agent) => {
-        t.equal(agent.agent, HandlingRobot.id, 'check if HandlingRobot agent found');
-        return Agent.request(agent.agent, 'transport-reserve', {orderId: 'asdf'});
-      })
-      .then((reply) => {
-        t.assert(reply.ok, 'reply must be ok');
-      });
-  });
-
-  test('move a transporter', (t) => {
-    return Agent.searchSkill('transport-move').
-      then((agents) => {
-        return agents[0];
-      })
-      .then((agent) => {
-        t.equal(agent.agent, HandlingRobot.id, 'check if HandlingRobot agent found');
-        return Agent.request(agent.agent, 'transport-move', {orderId: 'asdf', destination: 20});
-      })
-      .then((reply) => {
-        t.assert(reply.ok, 'reply must be ok');
-      });
-  });
-
-  test.skip('cfp-move', (t) => {
-    return Agent.searchSkill('exe-transport').
-      then((agents) => {
-        return agents[0];
-      })
-      .then( (agent) => {
-        return Agent.CAcfp(agent.agent, 'exe-transport', {});
-      })
-      .then( (reply) => {
-        console.log(reply);
-        t.end();
-      })
-  });
 
   test.skip('killAll', (t)=>{
     t.pass('emit SIGINT signal which kills the required HandlingRobot with a delay of 500ms');
