@@ -51,8 +51,10 @@ Promise.all([Agent.ready]).then(function () {
   function calculatePrice (message, context) {
     develop('calculatePrice', message, context);
     if(_.isEmpty(Agent.taskList)){
+      //TODO we should check if we can reach the positions here
       return {propose: {price: Math.random()}};
     } else {
+      develop('refuse, transport is reserved already');
       return {refuse: 'transport is already reserved. wait for completion'};
     }
 
@@ -60,7 +62,8 @@ Promise.all([Agent.ready]).then(function () {
   Agent.events.on('dispatch', dispatch);
   function reserveTransport (message, context) {
     develop('reserveTransport', message, context);
-    if(_.isEmpty(Agent.taskList)){
+    if( !_.isEmpty(Agent.taskList) ){
+      develop(Agent.taskList);
       return {failure: 'cannot reserve. transport is already reserved. '};
     } else {
       let task = {
@@ -84,14 +87,26 @@ Promise.all([Agent.ready]).then(function () {
       yield requestGive(task.task.from.agent);
       yield Agent.move(task.task.to.position);
       yield requestTake(task.task.to.agent);
+      _.remove(Agent.taskList, {taskId: task.taskId});
+      develop('task successfully finished. removed. taskList:', Agent.taskList);
     }).catch((err) => {console.error('dispatch',err);});
+  }
+  function requestGive(participant, orderId) {
+    return new Promise((resolve, reject) => {
+      resolve();
+    });
+  }
+  function requestTake(participant, orderId) {
+    return new Promise((resolve, reject) => {
+      resolve();
+    });
   }
 
 
 
-  co(function* (){
-    // Main control flow behaviour
-  }).catch(console.error);
+  //co(function* (){
+  //  // Main control flow behaviour
+  //}).catch(console.error);
 
   // deRegister upon exiting
   process.on('SIGINT', function(){

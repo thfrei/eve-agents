@@ -161,7 +161,7 @@ Agent.prototype.request = function(to, method, params) {
 
 // cfp
 Agent.prototype.CAcfp = function(seller, conversation, objective){
-  console.log('getP', seller);
+  console.log('CAcfp', seller);
   return new Promise( (resolve, reject) => {
     this.tell(seller, conversation)
       .tell(function (message, context) {
