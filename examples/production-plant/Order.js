@@ -26,9 +26,10 @@ var agentOptions = {
 var Agent = new GeneralAgent(agentOptions);
 
 Promise.all([Agent.ready]).then(function () {
+  "use strict";
 
   // order
-  let order = {}
+  let order = {};
   order.orderId = uuid();
   order.recipe = [
     {
@@ -64,19 +65,22 @@ Promise.all([Agent.ready]).then(function () {
     }
   ];
 
-
   co(function* () {
+    "use strict";
+
     // Negotiate every entry in recipe and find an agent
-    let agents = yield Promise.all([_.map(order.recipe, negotiate)]);
-    console.log(agents);
+    let agents = yield _.map(order.recipe, negotiate);
+    console.log('agents', agents);
     // Edges of network. Ways that we need to travel:
     let edges = computeEdges(agents);
-    console.log(edges);
+    console.log('edges', edges);
     // Execute edges
-    _.forEach(edges, (edge) => {
+    //_.forEach(edges, (edge) => {
+    edges.forEach( function* (edge) {
+      console.log('edgesforeach',edge);
       // Negotiate for transport agent:
       let task = yield negotiateTransportation(edge);
-      console.log(task);
+      console.log('task', task);
       yield Agent.CArequest(task.agent, 'request-dispatch', task.taskId);
 
     });
@@ -88,19 +92,38 @@ Promise.all([Agent.ready]).then(function () {
     return cfpMinPrice(conversation, objective);
   }
 
+  function negotiateTransportation(edge) {
+    return Agent.searchSkill('cfp-transport')
+      .then((agents) => {
+        return agents[0];
+      })
+      .then((reply) => {
+        return Agent.CAcfpAcceptProposal(reply.agent, 'cfp-transport', edge);
+      })
+      .then((reply) => {
+        return reply.inform;
+      });
+  }
+
   function computeEdges (agents) {
     let edges = [];
     for (let i = 0; i < agents.length; i++) {
       let edge = {};
       edge.from = agents[i];
       edge.to = agents[i+1];
-      edges.push(edge);
+      if( edge.to ) {
+        edges.push(edge);
+      }
     }
     return edges;
   }
 
   function cfpMinPrice (conversation, objective) {
+    "use strict";
+
     return co(function* () {
+      "use strict";
+
       let participants = yield Agent.searchSkill(conversation);
       develop('participants for ', conversation, ': ', participants);
 
@@ -124,7 +147,9 @@ Promise.all([Agent.ready]).then(function () {
         // Tell participant with bestoffer to reserve
         let inform = yield Agent.CAcfpAcceptProposal(bestOffer.agent, conversation, objective);
         console.log(inform);
-        return inform;
+
+        let agent = {taskId: inform.informDone.taskId, agent: bestOffer.agent};
+        return agent;
       }
     });
   }

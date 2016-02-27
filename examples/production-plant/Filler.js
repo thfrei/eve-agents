@@ -6,10 +6,11 @@ const _ = require('lodash');
 const babble = require('babble');
 const develop = require('debug')('develop');
 const Promise = require('bluebird');
+const uuid = require('uuid-v4');
 let GeneralAgent = require('./../../agents/GeneralAgent');
 
 var agentOptions = {
-  //id: 'PromiseSeller',
+  id: 'Filler',
   DF: 'DFUID',
   transports: [
     {
@@ -22,43 +23,43 @@ var agentOptions = {
 
 var Agent = new GeneralAgent(agentOptions);
 
+Agent.liquids = [
+  {type: 'lemonade', amount: '10000'},
+  {type: 'weissbier', amount: '500'}
+];
+Agent.taskList = [];
+
 Promise.all([Agent.ready]).then(function () {
   Agent.events.on('registered',console.log);
 
-  Agent.skillAddCAcfpParticipant('cfp-book-trading', getBook, sellBook);
+  Agent.skillAddCAcfpParticipant('cfp-fill', checkParameters, reserve);
 
-  Agent.books = [
-    {title: 'Harry Potter', price: Math.random()},
-    {title: 'Harry Potter', price: Math.random()},
-    {title: 'Faust', price: Math.random()},
-    {title: 'Faust', price: Math.random()},
-    {title: 'Faust', price: Math.random()},
-    {title: 'Kabale und Liebe', price: Math.random()}
-  ];
 
-  function getBook (message, context) {
-    develop(message, context);
-    let book = _.find(Agent.books, {title: message.title});
-    if(book) {
-      develop('offer:', book);
-      return {propose: book}; // propose
-    } else {
-      develop('not in stock');
-      return {refuse: 'not in stock'}; // refuse
-    }
+  function checkParameters (message, context) {
+    return new Promise( (resolve, reject) => {
+      develop('#checkParams', message, context);
+      //let book = _.find(Agent.books, {title: message.title});
+      if(true) {
+        let offer = {price: Math.random()};
+        develop('offer:', offer);
+        resolve({propose: offer });
+      } else {
+        develop('not in stock');
+        resolve({refuse: 'not in stock'});
+      }
+    }).catch(console.error);
   }
 
-  function sellBook(message, context) {
+  function reserve(message, context) {
     return new Promise( (resolve, reject) => {
-      develop(message, context);
-      let bookIndex = _.findIndex(Agent.books, {title: message.title});
-      let book = _.pullAt(Agent.books, bookIndex); // remove the book from array
-      book.agent = Agent.id;
-      console.log('current stock', Agent.books);
+      develop('#reserve', message, context);
 
-      if(book) {
-        develop('inform-result:', book);
-        resolve({informDone: book}); // propose
+      let task = {taskId: uuid()};
+      Agent.taskList.push(task);
+
+      if(true) {
+        develop('inform-result:', task);
+        resolve({informDone: task}); // propose
       } else {
         develop('book could not be fetched in stock');
         resolve({failure: 'book could not be fetched in stock'}); // refuse
@@ -68,6 +69,14 @@ Promise.all([Agent.ready]).then(function () {
 
   Agent.CArequestParticipant('request-give', give);
   function give(message, context){
+    develop('#give', message, context);
+    return new Promise((resolve, reject) => {
+      resolve({inform: 'here you have it'});
+    });
+  }
+
+  Agent.CArequestParticipant('request-take', take);
+  function take(message, context){
     develop('#give', message, context);
     return new Promise((resolve, reject) => {
       resolve({inform: 'here you have it'});
