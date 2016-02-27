@@ -59,7 +59,7 @@ Promise.all([Agent.ready]).then(function () {
     }
 
   }
-  Agent.events.on('dispatch', dispatch);
+  //Agent.events.on('dispatch', dispatch);
   function reserveTransport (message, context) {
     develop('reserveTransport', message, context);
     if( !_.isEmpty(Agent.taskList) ){
@@ -69,6 +69,7 @@ Promise.all([Agent.ready]).then(function () {
       let task = {
         orderId: message.orderId,
         taskId: uuid(),
+        agent: Agent.id,
         task: {
           from: message.from,
           to: message.to
@@ -76,13 +77,18 @@ Promise.all([Agent.ready]).then(function () {
       };
       Agent.taskList.push(task);
       develop('task is now in tasklist:', Agent.taskList);
-      Agent.events.emit('dispatch', task);
-      develop('dispatched!');
-      return {informDone: task};
+      //Agent.events.emit('dispatch', task);
+      //develop('dispatched!');
+      return {inform: task};
     }
   }
-  function dispatch (task) {
-    co(function* (){
+
+  Agent.CArequestParticipant('request-dispatch', dispatch);
+  function dispatch (objective, context) {
+    develop('#request-dispatch', objective, context);
+    let task = _.find(taskList, {taskId: objective.taskId});
+
+    return co(function* (){
       yield Agent.move(task.task.from.position);
       yield requestGive(task.task.from.agent);
       yield Agent.move(task.task.to.position);
