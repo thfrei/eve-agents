@@ -276,7 +276,8 @@ Agent.prototype.CArequest = function (participant, conversation, objective){
         }
         if (message.inform) {
           develop('inform:', message);
-          let ret = message.inform;
+          let ret = {};
+          ret.inform = message.inform;
           ret.agent = context.from; //add seller name to propositions
           resolve(ret);
         }
