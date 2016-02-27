@@ -89,15 +89,15 @@ Promise.all([Agent.ready]).then(function () {
       'use strict';
 
       develop('#request-dispatch', objective, context);
-      let task = _.find(Agent.taskList, {taskId: objective.taskId});
-      console.log('task', task);
+      let job = _.find(Agent.taskList, {taskId: objective.taskId});
+      console.log('task', job);
 
       co(function* () {
         yield Agent.move(10);
-        yield requestGive(task.task.from.agent);
+        yield requestGive(job.task.from.agent, job.task.from.taskId);
         yield Agent.move(10);
-        yield requestTake(task.task.to.agent);
-        _.remove(Agent.taskList, {taskId: task.taskId});
+        yield requestTake(job.task.to.agent, job.task.to.taskId);
+        _.remove(Agent.taskList, {taskId: job.taskId});
         develop('task successfully finished. removed. taskList:', Agent.taskList);
         resolve({inform: 'done'});
       }).catch((err) => {
@@ -106,12 +106,12 @@ Promise.all([Agent.ready]).then(function () {
       });
     });
   }
-  function requestGive(participant, orderId) {
-    return new Promise((resolve, reject) => {
-      resolve();
-    });
+  function requestGive(participant, taskId) {
+    develop('requestGive', participant, taskId);
+    return Agent.CArequest(participant, 'request-give', taskId);
   }
-  function requestTake(participant, orderId) {
+  function requestTake(participant, taskId) {
+    develop('requestTake', participant, taskId);
     return new Promise((resolve, reject) => {
       resolve();
     });

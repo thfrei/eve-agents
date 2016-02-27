@@ -86,6 +86,8 @@ Promise.all([Agent.ready]).then(function () {
       console.log('edge complete', done);
       return Promise.resolve(done);
     }));
+    console.log('HHHHHHHHUUUUUUUUURRRRRRRRRRAAAAAAAAAAAHHHHHHHHHHHHH!!!!!!!!!!!!');
+    console.log('HHHHHHHHUUUUUUUUURRRRRRRRRRAAAAAAAAAAAHHHHHHHHHHHHH!!!!!!!!!!!!');
   }).catch(console.error);
 
   function negotiate (service) {
