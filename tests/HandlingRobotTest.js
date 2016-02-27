@@ -23,7 +23,7 @@ let Agent = new GeneralAgent(agentOptions);
 
 Agent.ready.then(()=>{
 
-  Agent.register();
+  //Agent.register();
 
   test('find Handling Robot', (t)=>{
     return Agent.searchSkill('cfp-transport')
@@ -81,14 +81,16 @@ Agent.ready.then(()=>{
       .then((reply) => {
         console.log('it worked :-) ', reply);
         let task = reply.informDone;
-        t.deepEqual(task.task.from, mockEdge.from, 'compare from');
+        t.deepEqual(task.task.from, mockEdge.from, 'compare from'); //TODO why doesnt the test end?
+        return Promise.resolve();
       });
   });
 
 
-  test.skip('killAll', (t)=>{
+  test('killAll', (t)=>{
     t.pass('emit SIGINT signal which kills the required HandlingRobot with a delay of 500ms');
     process.emit('SIGINT');
+    setTimeout(process.exit, 500);
     t.end();
   });
 
