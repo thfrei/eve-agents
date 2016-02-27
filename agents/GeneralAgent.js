@@ -129,7 +129,7 @@ Agent.prototype.searchSkill = function(skill){
       if(reply.err) {
         throw new Error('#search could not be performed' + reply.err);
       } else if(_.isEmpty(reply)) {
-        throw new Error('no skill was found');
+        throw new Error('no skill was found. skill:'+skill);
       } else {
         develop('#search skill:',skill,':',reply);
         return Promise.resolve(reply);
