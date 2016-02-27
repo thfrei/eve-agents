@@ -8,6 +8,7 @@ const develop = require('debug')('develop');
 const Promise = require('bluebird');
 const co = require('co');
 const retry = require('co-retry');
+const forEach = require('co-foreach');
 const uuid = require('uuid-v4');
 let GeneralAgent = require('./../../agents/GeneralAgent');
 
@@ -75,15 +76,16 @@ Promise.all([Agent.ready]).then(function () {
     let edges = computeEdges(agents);
     console.log('edges', edges);
     // Execute edges
-    //_.forEach(edges, (edge) => {
-    edges.forEach( function* (edge) {
+    yield Promise.each(edges, co.wrap(function* (edge) {
+    //yield forEach(edges, function* (edge) {
       console.log('edgesforeach',edge);
       // Negotiate for transport agent:
       let task = yield negotiateTransportation(edge);
-      console.log('task', task);
-      yield Agent.CArequest(task.agent, 'request-dispatch', task.taskId);
-
-    });
+      console.log('negotiated task', task);
+      let done = yield Agent.CArequest(task.agent, 'request-dispatch', {taskId: task.taskId});
+      console.log('edge complete', done);
+      return Promise.resolve(done);
+    }));
   }).catch(console.error);
 
   function negotiate (service) {
