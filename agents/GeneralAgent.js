@@ -250,6 +250,14 @@ Agent.prototype.skillAddCAcfpParticipant = function(conversation, cfpListener, a
 
 // cfp end
 
+/**
+ * conversation helper for a simple request - returns a promise
+ * @param participant String (agent-id)
+ * @param conversation String ('request-conversation')
+ * @param objective Object (e.g. {title: 'Harry Potter'})
+ * @returns {bluebird|exports|module.exports}
+ * @constructor
+ */
 Agent.prototype.CArequest = function (participant, conversation, objective){
   console.log('CArequest', participant);
   return new Promise( (resolve, reject) => {
@@ -275,6 +283,12 @@ Agent.prototype.CArequest = function (participant, conversation, objective){
       });
   });
 };
+/**
+ * Helper for request participant. Executes a given promise when called
+ * @param conversation String ('request-conversation')
+ * @param executeRequest Function(Promise) function(message, context) or function(objective)
+ * @constructor
+ */
 Agent.prototype.CArequestParticipant = function (conversation, executeRequest) {
   this.listen(conversation)
     .listen(function (message, context) { // cfp (book-title)
