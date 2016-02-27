@@ -74,14 +74,6 @@ Promise.all([Agent.ready]).then(function () {
     });
   }
 
-  Agent.CArequestParticipant('request-take', take);
-  function take(message, context){
-    develop('#give', message, context);
-    return new Promise((resolve, reject) => {
-      resolve({inform: 'here you have it'});
-    });
-  }
-
   // Register Skills
   Agent.register()
     .catch(console.log);

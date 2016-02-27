@@ -112,9 +112,7 @@ Promise.all([Agent.ready]).then(function () {
   }
   function requestTake(participant, taskId) {
     develop('requestTake', participant, taskId);
-    return new Promise((resolve, reject) => {
-      resolve();
-    });
+    return Agent.CArequest(participant, 'request-take', taskId);
   }
 
 

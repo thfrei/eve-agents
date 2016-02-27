@@ -66,17 +66,9 @@ Promise.all([Agent.ready]).then(function () {
     }).catch(console.error);
   }
 
-  Agent.CArequestParticipant('request-give', give);
-  function give(message, context){
-    develop('#give', message, context);
-    return new Promise((resolve, reject) => {
-      resolve({inform: 'here you have it'});
-    });
-  }
-
   Agent.CArequestParticipant('request-take', take);
   function take(message, context){
-    develop('#give', message, context);
+    develop('#take', message, context);
     return new Promise((resolve, reject) => {
       resolve({inform: 'here you have it'});
     });
