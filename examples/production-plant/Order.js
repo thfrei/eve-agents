@@ -11,7 +11,7 @@ const retry = require('co-retry');
 let GeneralAgent = require('./../../agents/GeneralAgent');
 
 var agentOptions = {
-  id: 'BuyerPromises',
+  id: 'Order1',
   DF: 'DFUID',
   transports: [
     {
@@ -25,37 +25,45 @@ var agentOptions = {
 var Agent = new GeneralAgent(agentOptions);
 
 Promise.all([Agent.ready]).then(function () {
-  Agent.events.on('registered',develop);
-  // Register Skills
-  Agent.register();
+
+  // order
+  let order = [
+    {
+      service: 'bottleInput',
+      parameters: {
+        bottleType: 'longneck', size: 300
+      }
+    },
+    {
+      service: 'print',
+      parameters: {
+        logo: '1.gif',
+        bottleType: 'longneck', size: 300
+      }
+    },
+    {
+      service: 'fill',
+      parameters: {
+        liquids: [{type: 'lemonade', amount: 150}, {type: 'weissbier', amount: 150}]
+      }
+    },
+    {
+      service: 'close',
+      parameters: {
+        bottletype: 'longneck'
+      }
+    },
+    {
+      service: 'bottleOutput',
+      parameters: {
+        size: 300
+      }
+    }
+  ];
+
 
   co(function* () {
-    let conv = 'cfp-book-trading';
-    let obj = {title: 'Harry Potter'};
-    let sellers = yield Agent.searchSkill(conv);
-    console.log(sellers);
-
-    // ask all sellers for book (conv, obj)
-    let propositions = yield Promise.all(_.map(sellers, (seller) => {
-      return Agent.CAcfp(seller.agent, conv, obj);
-    }));
-    console.log('propositions', propositions);
-
-    // Filter refused cfps
-    _.remove(propositions, (prop) => { if(prop.refuse) { return true; }});
-    console.log('clean propositions', propositions);
-
-    // Get offer with lowest price
-    let bestOffer = _.minBy(propositions, (offer) => {return offer.price});
-    if(typeof bestOffer == 'undefined') {
-      console.log('book is not available, nowhere');
-    } else {
-      console.log('bestOffer', bestOffer);
-
-      // Tell seller with bestoffer to buy
-      let inform = yield Agent.CAcfpAcceptProposal(bestOffer.agent, conv, obj);
-      console.log(inform);
-    }
+    // logic
   }).catch(console.error);
 
   // deRegister upon exiting
@@ -64,6 +72,5 @@ Promise.all([Agent.ready]).then(function () {
     Agent.deRegister();
     setTimeout(process.exit, 500); // wait for deregistering complete
   });
-
 }).catch(function(err){console.log('exe',err)});
 
