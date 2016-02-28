@@ -35,7 +35,7 @@ Agent.move = function(position){
     if ( _.indexOf(Agent.positions, position) != -1 ) {
       console.log('!!!!!!!!!!!!!! ==== moving... 1s');
 
-      setTimeout(resolve, 2000);
+      setTimeout(resolve, 500);
     } else {
       reject({err: 'position cannot be reached'});
     }
@@ -68,7 +68,7 @@ Promise.all([Agent.ready]).then(function () {
     } else {
       let task = {
         orderId: message.orderId,
-        taskId: uuid(),
+        taskId: 'transport-'+uuid(),
         agent: Agent.id,
         task: {
           from: message.from,
@@ -83,12 +83,12 @@ Promise.all([Agent.ready]).then(function () {
     }
   }
 
-  Agent.CArequestParticipant('request-dispatch', dispatch);
+  Agent.CArequestParticipant('request-execute', dispatch);
   function dispatch (objective, context) {
     return new Promise((resolve, reject) => {
       'use strict';
 
-      develop('#request-dispatch', objective, context);
+      develop('#request-execute', objective, context);
       let job = _.find(Agent.taskList, {taskId: objective.taskId});
       console.log('task', job);
 

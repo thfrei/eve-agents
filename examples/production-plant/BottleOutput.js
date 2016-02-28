@@ -53,7 +53,7 @@ Promise.all([Agent.ready]).then(function () {
     return new Promise( (resolve, reject) => {
       develop('#reserve', message, context);
 
-      let task = {taskId: uuid()};
+      let task = {taskId: 'output-'+uuid()};
       Agent.taskList.push(task);
 
       if(true) {

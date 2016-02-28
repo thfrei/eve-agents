@@ -259,7 +259,7 @@ Agent.prototype.skillAddCAcfpParticipant = function(conversation, cfpListener, a
  * @constructor
  */
 Agent.prototype.CArequest = function (participant, conversation, objective){
-  console.log('CArequest', participant);
+  develop('CArequest', participant, conversation, objective);
   return new Promise( (resolve, reject) => {
     this.tell(participant, conversation)
       .tell(function (message, context) {

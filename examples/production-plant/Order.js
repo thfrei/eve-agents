@@ -8,7 +8,6 @@ const develop = require('debug')('develop');
 const Promise = require('bluebird');
 const co = require('co');
 const retry = require('co-retry');
-const forEach = require('co-foreach');
 const uuid = require('uuid-v4');
 let GeneralAgent = require('./../../agents/GeneralAgent');
 
@@ -48,6 +47,7 @@ Promise.all([Agent.ready]).then(function () {
     //},
     {
       service: 'fill',
+      execute: true,
       parameters: {
         liquids: [{type: 'lemonade', amount: 150}, {type: 'weissbier', amount: 150}]
       }
@@ -75,25 +75,30 @@ Promise.all([Agent.ready]).then(function () {
     // Edges of network. Ways that we need to travel:
     let edges = computeEdges(agents);
     console.log('edges', edges);
-    // Execute edges
-    yield Promise.each(edges, co.wrap(function* (edge) {
+    // Execute travel edges
+    yield Promise.each(edges, co.wrap(function* (edge) { //wrap a generator function into a promise
     //yield forEach(edges, function* (edge) {
       console.log('edgesforeach',edge);
       // Negotiate for transport agent:
       let task = yield negotiateTransportation(edge);
       console.log('negotiated task', task);
-      let done = yield Agent.CArequest(task.agent, 'request-dispatch', {taskId: task.taskId});
+      let done = yield Agent.CArequest(task.agent, 'request-execute', {taskId: task.taskId});
       console.log('edge complete', done);
+      // Now execute the main-task
+      if(edge.to.execute) {
+        let mainDone = yield Agent.CArequest(edge.to.agent, 'request-execute', {taskId: edge.to.taskId});
+        console.log('mainDone', mainDone);
+      }
       return Promise.resolve(done);
     }));
     console.log('HHHHHHHHUUUUUUUUURRRRRRRRRRAAAAAAAAAAAHHHHHHHHHHHHH!!!!!!!!!!!!');
     console.log('HHHHHHHHUUUUUUUUURRRRRRRRRRAAAAAAAAAAAHHHHHHHHHHHHH!!!!!!!!!!!!');
   }).catch(console.error);
 
-  function negotiate (service) {
-    let conversation = 'cfp-'+service.service;
-    let objective = service.parameters;
-    return cfpMinPrice(conversation, objective);
+  function negotiate (task) {
+    let conversation = 'cfp-'+task.service;
+    //let service = task.parameters;
+    return cfpMinPrice(conversation, task);
   }
 
   function negotiateTransportation(edge) {
@@ -122,7 +127,7 @@ Promise.all([Agent.ready]).then(function () {
     return edges;
   }
 
-  function cfpMinPrice (conversation, objective) {
+  function cfpMinPrice (conversation, task) {
     "use strict";
 
     return co(function* () {
@@ -133,7 +138,7 @@ Promise.all([Agent.ready]).then(function () {
 
       // ask all participants for objective
       let propositions = yield Promise.all(_.map(participants, (participant) => {
-        return Agent.CAcfp(participant.agent, conversation, objective);
+        return Agent.CAcfp(participant.agent, conversation, task.parameters);
       }));
       console.log('propositions', propositions);
 
@@ -144,15 +149,18 @@ Promise.all([Agent.ready]).then(function () {
       // Get offer with lowest price
       let bestOffer = _.minBy(propositions, (offer) => {return offer.price});
       if(typeof bestOffer == 'undefined') {
-        console.log(objective,' is not available, nowhere');
+        console.log(task.parameters,' is not available, nowhere');
       } else {
         console.log('bestOffer', bestOffer);
 
         // Tell participant with bestoffer to reserve
-        let inform = yield Agent.CAcfpAcceptProposal(bestOffer.agent, conversation, objective);
+        let inform = yield Agent.CAcfpAcceptProposal(bestOffer.agent, conversation, task.parameters);
         console.log(inform);
 
         let agent = {taskId: inform.informDone.taskId, agent: bestOffer.agent};
+        if(task.execute) {
+          agent.execute = task.execute;
+        }
         return agent;
       }
     });
