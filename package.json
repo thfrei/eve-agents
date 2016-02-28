@@ -24,6 +24,7 @@
     "javascript-state-machine": "^2.3.5",
     "lodash": "^4.3.0",
     "machina": "^1.1.2",
+    "mqtt": "^1.7.3",
     "mz": "^2.3.1",
     "node-opcua": "0.0.51",
     "random-js": "^1.0.8",
