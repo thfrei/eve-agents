@@ -90,7 +90,7 @@ Promise.all([Agent.ready]).then(function () {
   function take(message, context){
     develop('#take', message, context);
     return new Promise((resolve, reject) => {
-      resolve({inform: 'here you have it'});
+      resolve({inform: 'i took it'});
     });
   }
 

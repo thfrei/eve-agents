@@ -20,7 +20,8 @@ var agentOptions = {
       url: 'amqp://localhost'
       //host: 'dev.rabbitmq.com'
     }
-  ]
+  ],
+  mqtt: 'mqtt://localhost'
 };
 
 var Agent = new GeneralAgent(agentOptions);
@@ -49,38 +50,41 @@ Promise.all([Agent.ready]).then(function () {
   Agent.skillAddCAcfpParticipant('cfp-transport', calculatePrice, reserveTransport);
   Agent.register();
   function calculatePrice (message, context) {
-    develop('calculatePrice', message, context);
-    if(_.isEmpty(Agent.taskList)){
-      //TODO we should check if we can reach the positions here
-      return {propose: {price: Math.random()}};
-    } else {
-      develop('refuse, transport is reserved already');
-      return {refuse: 'transport is already reserved. wait for completion'};
-    }
-
+    return new Promise((resolve, reject) => {
+      develop('calculatePrice', message, context);
+      if(_.isEmpty(Agent.taskList)){
+        //TODO we should check if we can reach the positions here
+        resolve({propose: {price: Math.random()}});
+      } else {
+        develop('refuse, transport is reserved already');
+        resolve({refuse: 'transport is already reserved. wait for completion'});
+      }
+    });
   }
   //Agent.events.on('dispatch', dispatch);
   function reserveTransport (message, context) {
-    develop('reserveTransport', message, context);
-    if( !_.isEmpty(Agent.taskList) ){
-      develop(Agent.taskList);
-      return {failure: 'cannot reserve. transport is already reserved. '};
-    } else {
-      let task = {
-        orderId: message.orderId,
-        taskId: 'transport-'+uuid(),
-        agent: Agent.id,
-        task: {
-          from: message.from,
-          to: message.to
-        }
-      };
-      Agent.taskList.push(task);
-      develop('task is now in tasklist:', Agent.taskList);
-      //Agent.events.emit('dispatch', task);
-      //develop('dispatched!');
-      return {inform: task};
-    }
+    return new Promise((resolve, reject) => {
+      develop('reserveTransport', message, context);
+      if (!_.isEmpty(Agent.taskList)) {
+        develop(Agent.taskList);
+        resolve({failure: 'cannot reserve. transport is already reserved. '});
+      } else {
+        let task = {
+          orderId: message.orderId,
+          taskId: 'transport-' + uuid(),
+          agent: Agent.id,
+          task: {
+            from: message.from,
+            to: message.to
+          }
+        };
+        Agent.taskList.push(task);
+        develop('task is now in tasklist:', Agent.taskList);
+        //Agent.events.emit('dispatch', task);
+        //develop('dispatched!');
+        resolve({inform: task});
+      }
+    });
   }
 
   Agent.CArequestParticipant('request-execute', dispatch);

@@ -20,7 +20,8 @@ var agentOptions = {
       url: 'amqp://localhost'
       //host: 'dev.rabbitmq.com'
     }
-  ]
+  ],
+  mqtt: 'mqtt://localhost'
 };
 
 var Agent = new GeneralAgent(agentOptions);

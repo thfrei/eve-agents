@@ -18,7 +18,8 @@ var agentOptions = {
       url: 'amqp://localhost'
       //host: 'dev.rabbitmq.com'
     }
-  ]
+  ],
+  mqtt: 'mqtt://localhost'
 };
 
 var Agent = new GeneralAgent(agentOptions);
@@ -70,7 +71,7 @@ Promise.all([Agent.ready]).then(function () {
   function take(message, context){
     develop('#take', message, context);
     return new Promise((resolve, reject) => {
-      resolve({inform: 'here you have it'});
+      resolve({inform: 'i took it'});
     });
   }
 
