@@ -11,7 +11,7 @@ const co = require('co');
 let GeneralAgent = require('./../../agents/GeneralAgent');
 
 var agentOptions = {
-  id: 'Filler',
+  id: 'Filler'+uuid(),
   DF: 'DFUID',
   transports: [
     {

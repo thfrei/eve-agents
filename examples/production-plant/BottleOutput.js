@@ -10,7 +10,7 @@ const uuid = require('uuid-v4');
 let GeneralAgent = require('./../../agents/GeneralAgent');
 
 var agentOptions = {
-  id: 'BottleOutput',
+  id: 'BottleOutput'+uuid(),
   DF: 'DFUID',
   transports: [
     {

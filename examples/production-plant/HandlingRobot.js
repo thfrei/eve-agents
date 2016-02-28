@@ -12,7 +12,7 @@ const retry = require('co-retry');
 let GeneralAgent = require('./../../agents/GeneralAgent');
 
 var agentOptions = {
-  id: 'HandlingRobot',
+  id: 'HandlingRobot'+uuid(),
   DF: 'DFUID',
   transports: [
     {
