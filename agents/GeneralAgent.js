@@ -8,6 +8,7 @@ const _ = require('underscore');
 const Promise = require('bluebird');
 let co = require('co');
 let eve = require('evejs');
+const mqtt = require('mqtt')
 
 const EventEmitter = require('events').EventEmitter;
 
@@ -22,7 +23,8 @@ function Agent(agent) {
 
   // Dirty
   if(agent.mqtt) {
-    this.mqtt = require('mqtt').connect(agent.mqtt);
+    console.log('using mqtt:', agent.mqtt);
+    this.mqtt = mqtt.connect(agent.mqtt);
   }
 
   this._skills = [];
@@ -121,6 +123,8 @@ Agent.prototype.searchSkill = function(skill){
  * @returns {*|Promise.<T>}
  */
 Agent.prototype.request = function(to, method, params) {
+  this.sendToSniffer({to: to, from: this.id, type: 'rpc', method: method, params: params});
+
   return this.rpc.request(to, {method: method, params: params})
     .then(function(reply){
       develop('#request ', to, method, params);
@@ -137,6 +141,8 @@ Agent.prototype.request = function(to, method, params) {
 // cfp
 Agent.prototype.CAcfp = function(seller, conversation, objective){
   console.log('CAcfp', seller);
+  this.sendToSniffer({to: seller, from: this.id, type: 'CAcfp', conversation: conversation, objective: objective});
+
   return new Promise( (resolve, reject) => {
     this.tell(seller, conversation)
       .tell(function (message, context) {
@@ -162,9 +168,10 @@ Agent.prototype.CAcfp = function(seller, conversation, objective){
 };
 
 Agent.prototype.CAcfpAcceptProposal = function(seller, conversation, objective){
-  console.log('accP', seller);
-
+  console.log('CAcfpAcceptProposal', seller);
   let conv = conversation + '-accept';
+
+  this.sendToSniffer({to: seller, from: this.id, type: 'CAcfpAcceptProposal', conversation: conversation, objective: objective});
 
   return new Promise( (resolve, reject) => {
     this.tell(seller, conv)
@@ -185,12 +192,26 @@ Agent.prototype.CAcfpAcceptProposal = function(seller, conversation, objective){
  * @constructor
  */
 Agent.prototype.CAcfpListener = function (conversation, doTell){
+  let self = this;
+  function cb(message, context) {
+    if (self.mqtt) {
+      // Hook into the promise chain
+      return doTell(message, context)
+        .then(function(reply) {
+          self.sendToSniffer({from: self.id, to: context.from, type: 'CAcfpListener', message: reply});
+          return reply;
+        });
+    } else {
+      return doTell(message, context);
+    }
+  }
+
   this.listen(conversation)
     .listen(function (message, context) { // cfp (book-title)
-      develop('in cfp-book-trading:', message);
+      develop('CAcfpListener:', message);
       return message;
     })
-    .tell(doTell);
+    .tell(cb);
 };
 
 /**
@@ -201,13 +222,26 @@ Agent.prototype.CAcfpListener = function (conversation, doTell){
  */
 Agent.prototype.CAcfpAcceptProposalListener = function (conversation, doAccept) {
   let conv = conversation + '-accept';
+  let self = this;
+  function cb(message, context) {
+    if (self.mqtt) {
+      // Hook into the promise chain
+      return doAccept(message, context)
+        .then(function(reply) {
+          self.sendToSniffer({from: self.id, to: context.from, type: 'CAcfpListener', message: reply});
+          return reply;
+        });
+    } else {
+      return doAccept(message, context);
+    }
+  }
 
   this.listen(conv)
     .listen(function (message, context) { // cfp (book-title)
       develop('in ', conv ,':' , message);
       return message;
     })
-    .tell(doAccept);
+    .tell(cb);
 };
 
 /**
@@ -235,6 +269,9 @@ Agent.prototype.skillAddCAcfpParticipant = function(conversation, cfpListener, a
  */
 Agent.prototype.CArequest = function (participant, conversation, objective){
   develop('CArequest', participant, conversation, objective);
+
+  this.sendToSniffer({to: participant, from: this.id, type: 'CArequest', conversation: conversation, objective: objective});
+
   return new Promise( (resolve, reject) => {
     this.tell(participant, conversation)
       .tell(function (message, context) {
@@ -266,14 +303,34 @@ Agent.prototype.CArequest = function (participant, conversation, objective){
  * @constructor
  */
 Agent.prototype.CArequestParticipant = function (conversation, executeRequest) {
+  let self = this;
+  function cb(message, context) {
+    if (self.mqtt) {
+      // Hook into the promise chain
+      return executeRequest(message, context)
+        .then(function(reply) {
+          self.sendToSniffer({from: self.id, to: context.from, type: 'CAcfpListener', message: reply});
+          return reply;
+        });
+    } else {
+      return executeRequest(message, context);
+    }
+  }
   this.listen(conversation)
     .listen(function (message, context) { // cfp (book-title)
       develop('#CArequestParticipant', message);
       return message;
     })
-    .tell(executeRequest);
+    .tell(cb);
 };
 
 // Conversation Patterns End ====================================================
+
+// Helper
+Agent.prototype.sendToSniffer = function (obj) {
+  if(this.mqtt) {
+    this.mqtt.publish('sniffer', JSON.stringify(obj));
+  }
+};
 
 module.exports = Agent;
