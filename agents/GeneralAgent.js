@@ -20,6 +20,11 @@ function Agent(agent) {
     transports: agent.transports
   });
 
+  // Dirty
+  if(agent.mqtt) {
+    this.mqtt = require('mqtt').connect(agent.mqtt);
+  }
+
   this._skills = [];
 
   // set Directory Facilitator
@@ -40,35 +45,6 @@ function Agent(agent) {
 }
 Agent.prototype = Object.create(eve.Agent.prototype);
 Agent.prototype.constructor = Agent; // not needed?
-
-// ACL ==========================================================================
-Agent.prototype.cfp = function (objective, conversation, participant) {
-  let EE = new EventEmitter();
-
-  var message = {method: 'cfp', params: {
-    step: 'cfp',
-    conversation: conversation,
-    objective: objective
-  }};
-  this.rpc.request(participant, message) // TODO: somehow closure is necessary? why?
-    .then(function(reply){
-      if(reply.err) {
-        throw new Error('#cfp could not be performed: ' + reply.err + '\n message:' + JSON.stringify(message));
-      }
-      else {
-        if(reply.refuse){
-          EE.emit('refuse', reply);
-        } else if (reply.propose) {
-          EE.emit('propose', reply);
-        } else {
-          EE.emit('err', reply);
-        }
-      }
-    });
-
-  return EE;
-};
-// ACL END= =====================================================================
 
 // Services =====================================================================
 Agent.prototype.rpcFunctions = {};
@@ -97,7 +73,7 @@ Agent.prototype.getSkills = function(){
 Agent.prototype.register = function(){
   // Register _skills
   var self = this;
-  return this.rpc.request(this.DF,{method: 'register', params: {skills: this._skills}})
+  return this.request(this.DF, 'register', {skills: this._skills})
     .then(function(reply){
       if(reply.err) throw new Error('#register could not be performed: ' + reply.err);
       else {
@@ -112,7 +88,7 @@ Agent.prototype.deRegister = function(){
   // Deregister _skills
   var self = this;
   //return new Promise((resolve, reject)=>{
-  return this.rpc.request(this.DF, {method: 'deRegister'})
+  return this.request(this.DF, 'deRegister')
     .then(function(reply){
       if(reply.err) throw new Error('#deregister could not be performed' + reply.err);
       else {
@@ -124,7 +100,7 @@ Agent.prototype.deRegister = function(){
 };
 
 Agent.prototype.searchSkill = function(skill){
-  return this.rpc.request(this.DF,{method: 'search', params: {skill: skill}})
+  return this.request(this.DF,'search', {skill: skill})
     .then(function(reply){
       if(reply.err) {
         throw new Error('#search could not be performed' + reply.err);
@@ -158,7 +134,6 @@ Agent.prototype.request = function(to, method, params) {
 // Behaviour End ================================================================
 
 // Conversation Patterns  =======================================================
-
 // cfp
 Agent.prototype.CAcfp = function(seller, conversation, objective){
   console.log('CAcfp', seller);
