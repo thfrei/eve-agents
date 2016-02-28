@@ -309,7 +309,7 @@ Agent.prototype.CArequestParticipant = function (conversation, executeRequest) {
       // Hook into the promise chain
       return executeRequest(message, context)
         .then(function(reply) {
-          self.sendToSniffer({from: self.id, to: context.from, type: 'CAcfpListener', message: reply});
+          self.sendToSniffer({from: self.id, to: context.from, type: 'CArequestParticipant', message: reply});
           return reply;
         });
     } else {
