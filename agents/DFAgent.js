@@ -55,7 +55,7 @@ DFAgent.prototype.rpcFunctions.register = function(params, from){
     this.events.emit('registered', from);
     this._agents.push({agent: from, skills: params.skills});
     this.events.emit('agentsChanged', this._agents);
-    return {status: 'ok', description: 'agent has been registered with _skills'+JSON.stringify(params._skills)};
+    return {status: 'ok', description: 'agent has been registered with skills: '+JSON.stringify(params.skills), skills: params.skills};
   }
 };
 
@@ -87,6 +87,16 @@ DFAgent.prototype.rpcFunctions.search = function(params, from) {
   console.log(found);
 
   return found;
+};
+
+/**
+ * get all registered agents
+ * @type {DFAgent}
+ */
+DFAgent.prototype.rpcFunctions.getAllAgents = function(params, from) {
+  console.log('Agent', from, 'wants to get all agents');
+
+  return this._agents;
 };
 
 module.exports = DFAgent;

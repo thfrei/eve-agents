@@ -18,7 +18,11 @@ function Agent(agent) {
 
   // Setup transports
   eve.system.init({
-    transports: agent.transports
+    transports: agent.transports,
+    timer: {
+      paced: false,
+      deterministic: true
+    }
   });
 
   // Dirty
@@ -77,11 +81,13 @@ Agent.prototype.register = function(){
   var self = this;
   return this.request(this.DF, 'register', {skills: this._skills})
     .then(function(reply){
+      console.log(reply);
       if(reply.err) throw new Error('#register could not be performed: ' + reply.err);
-      else {
-        let ret = 'register successfull with:'+JSON.stringify(self._skills);
-        self.events.emit('registered', ret);
-        return Promise.resolve(ret);
+      else if (_.isEmpty(reply)){
+        throw new Error('#register could not be performed. DF not reachable? ' + reply.err);
+      } else {
+        self.events.emit('registered', reply);
+        return Promise.resolve(reply);
       }
     });
 };
@@ -132,7 +138,7 @@ Agent.prototype.request = function(to, method, params) {
     })
     .catch(function(err){
       // RPC Timeout probably
-      return Promise.resolve('RPC Timeout? Or Agent.request internal error. err='+err);
+      throw new Error('RPC Timeout? Or Agent.request internal error. err='+err);
     });
 };
 // Behaviour End ================================================================
