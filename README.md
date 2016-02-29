@@ -12,6 +12,6 @@ Usage
 ------
 
 * Start a local RabbitMQ Broker (if using another than localhost, you need to adapt the agent instances)
-* Start Directory Facilitator: `node DFInstance.js`
-* Start some Seller Agents: `node examples/SellerPromisesBabble.js`
-* Start a Buyer Agent: `node examples/BuyerPromisesBabble.js`
+* Start `startProduction-Plant.cmd`
+
+If you want to use the sniffing feature, make sure, that the RabbitMQ Broker has the MQTT Plugin enabled.
