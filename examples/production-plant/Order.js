@@ -29,6 +29,8 @@ var Agent = new GeneralAgent(agentOptions);
 Promise.all([Agent.ready]).then(function () {
   "use strict";
 
+  Agent.register();
+
   // order
   let order = {};
   order.orderId = uuid();
@@ -39,13 +41,14 @@ Promise.all([Agent.ready]).then(function () {
         bottleType: 'longneck', size: 300
       }
     },
-    //{
-    //  service: 'print',
-    //  parameters: {
-    //    logo: '1.gif',
-    //    bottleType: 'longneck', size: 300
-    //  }
-    //},
+    {
+      service: 'print',
+      execute: true,
+      parameters: {
+        logo: '1.gif',
+        bottleType: 'longneck', size: 300
+      }
+    },
     {
       service: 'fill',
       execute: true,
