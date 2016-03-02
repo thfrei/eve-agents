@@ -8,7 +8,7 @@ const _ = require('underscore');
 const Promise = require('bluebird');
 let co = require('co');
 let eve = require('evejs');
-const mqtt = require('mqtt')
+const mqtt = require('mqtt');
 
 const EventEmitter = require('events').EventEmitter;
 
@@ -25,7 +25,7 @@ function Agent(agent) {
     }
   });
 
-  // Dirty
+  // MQTT Connection
   if(agent.mqtt) {
     console.log('using mqtt:', agent.mqtt);
     this.mqtt = mqtt.connect(agent.mqtt);

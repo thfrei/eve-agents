@@ -1,6 +1,6 @@
 "use strict";
 
-process.env.DEBUG = 'develop';
+const config = require('./../../config.js');
 
 const _ = require('lodash');
 const babble = require('babble');
@@ -11,15 +11,15 @@ let GeneralAgent = require('./../../agents/GeneralAgent');
 
 var agentOptions = {
   id: 'BottleOutput'+uuid(),
-  DF: 'DFUID',
+  DF: config.DF,
   transports: [
     {
       type: 'amqp',
-      url: 'amqp://localhost'
+      url: config.amqpHost
       //host: 'dev.rabbitmq.com'
     }
   ],
-  mqtt: 'mqtt://localhost'
+  mqtt: config.mqttHost
 };
 
 var Agent = new GeneralAgent(agentOptions);

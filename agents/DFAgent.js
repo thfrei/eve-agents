@@ -5,6 +5,8 @@ let eve = require('evejs');
 const _ = require('lodash');
 const EventEmitter = require('events').EventEmitter;
 
+const mqtt = require('mqtt');
+
 function DFAgent(options) {
   // execute super constructor
   eve.Agent.call(this, options.id);
@@ -14,6 +16,12 @@ function DFAgent(options) {
   });
   console.log(this.id,' is connecting...');
   this.connect(eve.system.transports.getAll());
+
+  // MQTT Connection
+  if(options.mqtt) {
+    console.log('using mqtt:', options.mqtt);
+    this.mqtt = mqtt.connect(options.mqtt);
+  }
 
   // Properties =======================================================
   this._agents = []; // [{agent: name, _skills: [skill1, 2, 3]},{...}]
