@@ -28,15 +28,15 @@ Promise.all([DF.ready]).then(function () {
 
   DF.events.on('registered', (msg)=>{
     develop("registered agent:\n",msg);
-    DF.mqtt.publish('/agent/registered', JSON.stringify(msg));
+    DF.mqtt.publish('/df/agent/registered', JSON.stringify(msg));
   });
   DF.events.on('deRegistered', (msg)=>{
     develop("deRegistered agent:\n",msg);
-    DF.mqtt.publish('/agent/deRegistered', JSON.stringify(msg));
+    DF.mqtt.publish('/df/agent/deRegistered', JSON.stringify(msg));
   });
   DF.events.on('agentsChanged', (msg)=>{
     develop("agents Changed:\n",msg);
-    DF.mqtt.publish('/agent/list', JSON.stringify(msg));
+    DF.mqtt.publish('/df/agent/list', JSON.stringify(msg));
   });
 
 }).catch(console.log);
