@@ -39,13 +39,42 @@ Agent.liquids = [
 ];
 Agent.taskList = [];
 
-Agent.execute = function(job){
-  return new Promise( (resolve, reject) => {
-    // if position can be reached
-      console.log('execute.......', JSON.stringify(job));
-      setTimeout(resolve, 2000);
+var opc = new require('node-opcua-simple');
+var opcua = new opc.opcua();
 
-  });
+opcua.connect('opc.tcp://localhost:4334/')
+  .then(function(result){
+    develop('OPC UA connected', result);
+  })
+  .catch(console.error);
+
+Agent.execute = function(job){
+
+  return co(function* () {
+    console.log('execute.......', JSON.stringify(job));
+
+    let subscription = yield opcua.subscribe();
+    yield opcua.write('MI5.Module2501.Output.SkillOutput.SkillOutput0.Parameter.Parameter0.Value', 1337, 'Int16');
+    yield opcua.write('MI5.Module2501.Input.SkillInput.SkillInput0.Execute', true, 'Boolean');
+
+    // wait for done to become true
+    let done = yield opcua.monitor(subscription, 'MI5.Module2501.Output.SkillOutput.SkillOutput0.Done');
+    yield new Promise(function(resolve, reject) {
+      done.on('changed', function(data){
+        //console.log(data);
+        if (data.value.value == true) {
+          subscription.terminate();
+          resolve();
+        }
+      });
+    });
+    done = undefined; // TODO somehow the monitored item continues to be called (on node-opcua server)
+    subscription = undefined;
+
+    yield opcua.write('MI5.Module2501.Output.SkillOutput.SkillOutput0.Done', false, 'Boolean');
+    yield opcua.write('MI5.Module2501.Input.SkillInput.SkillInput0.Execute', false, 'Boolean');
+
+  }).catch(console.error);
 };
 
 Promise.all([Agent.ready]).then(function () {
