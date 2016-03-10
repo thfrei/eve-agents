@@ -1,5 +1,8 @@
 @ECHO OFF
-ECHO This script will start a prodcution-plant example (Rabbit-MQ needed)
+ECHO This script will start all showcase mi5 agents
+ECHO Start the RabbitMQ Broker
+pause
+ECHO Starting the DF
 START "DF" nodemon ./../../DFInstance.js
 pause
 ECHO Start the Agents for the production modules

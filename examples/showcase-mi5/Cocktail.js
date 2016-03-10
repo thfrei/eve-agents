@@ -11,7 +11,7 @@ const co = require('co');
 let GeneralAgent = require('./../../agents/GeneralAgent');
 
 var agentOptions = {
-  id: 'Cocktail'+uuid(),
+  id: 'Cocktail',
   DF: config.DF,
   transports: [
     {
@@ -25,6 +25,8 @@ var agentOptions = {
 
 var Agent = new GeneralAgent(agentOptions);
 
+Agent.position = 500;
+
 Agent.liquids = [
   {type: 'grenadine', amount: '10000'},
   {type: 'lemon', amount: '10000'},
@@ -37,10 +39,10 @@ Agent.liquids = [
 ];
 Agent.taskList = [];
 
-Agent.execute = function(){
+Agent.execute = function(job){
   return new Promise( (resolve, reject) => {
     // if position can be reached
-      console.log('execute.......');
+      console.log('execute.......', JSON.stringify(job));
       setTimeout(resolve, 2000);
 
   });
@@ -50,7 +52,7 @@ Promise.all([Agent.ready]).then(function () {
   Agent.events.on('registered',console.log);
 
   Agent.skillAddCAcfpParticipant('cfp-fill', checkParameters, reserve);
-
+  Agent.skillAdd('getPosition', function(){ return Agent.position; });
 
   function checkParameters (message, context) {
     return new Promise( (resolve, reject) => {
@@ -71,7 +73,10 @@ Promise.all([Agent.ready]).then(function () {
     return new Promise( (resolve, reject) => {
       develop('#reserve', message, context);
 
-      let task = {taskId: 'fill-'+uuid()};
+      let task = {
+        taskId: 'fill-'+uuid(),
+        parameters: message
+      };
       Agent.taskList.push(task);
 
       if(true) {
@@ -108,7 +113,10 @@ Promise.all([Agent.ready]).then(function () {
       co(function* () {
         let job = _.find(Agent.taskList, {taskId: objective.taskId});
         console.log('task', job);
-        yield Agent.execute();
+        if(typeof job == 'undefined') {
+          throw new Error('job was not found in taskList:', Agent.taskList);
+        }
+        yield Agent.execute(job);
         _.remove(Agent.taskList, {taskId: job.taskId});
         develop('task successfully finished. removed. taskList:', Agent.taskList);
         resolve({inform: 'done'});

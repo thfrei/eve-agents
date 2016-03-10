@@ -10,7 +10,7 @@ const uuid = require('uuid-v4');
 let GeneralAgent = require('./../../agents/GeneralAgent');
 
 var agentOptions = {
-  id: 'Input'+uuid(),
+  id: 'Input',
   DF: config.DF,
   transports: [
     {
@@ -24,6 +24,7 @@ var agentOptions = {
 
 var Agent = new GeneralAgent(agentOptions);
 
+Agent.position = 100;
 // TODO Input module takes cups (containers) -- it also is the start point of a reservation of xts transport
 Agent.bottles = [
   {bottleType: 'longneck', size: 300}
@@ -33,8 +34,8 @@ Agent.taskList = [];
 Promise.all([Agent.ready]).then(function () {
   Agent.events.on('registered',console.log);
 
+  Agent.skillAdd('getPosition', function(){ return Agent.position; });
   Agent.skillAddCAcfpParticipant('cfp-containerInput', checkParameters, reserve);
-
 
   function checkParameters (message, context) {
     return new Promise( (resolve, reject) => {

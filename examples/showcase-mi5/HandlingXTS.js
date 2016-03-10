@@ -12,7 +12,7 @@ const retry = require('co-retry');
 let GeneralAgent = require('./../../agents/GeneralAgent');
 
 var agentOptions = {
-  id: 'XTS'+uuid(),
+  id: 'XTS1',
   DF: config.DF,
   transports: [
     {
@@ -34,7 +34,7 @@ Agent.taskList = [];
 Agent.move = function(position){
   return new Promise( (resolve, reject) => {
     // if position can be reached
-    if ( _.indexOf(Agent.positions, position) != -1 ) {
+    if ( _.indexOf(Agent.positions, position) != -1 || true ) {
       console.log('!!!!!!!!!!!!!! ==== moving... 1s');
 
       setTimeout(resolve, 500);
@@ -98,10 +98,16 @@ Promise.all([Agent.ready]).then(function () {
       console.log('task', job);
 
       co(function* () {
-        yield Agent.move(10);
+        let fromPosition = yield Agent.request(job.task.from.agent, 'getPosition');
+        console.log('fromPosition', fromPosition);
+        yield Agent.move(fromPosition); // TODO here must be real position
         yield requestGive(job.task.from.agent, job.task.from.taskId);
-        yield Agent.move(10);
+
+        let toPosition = yield Agent.request(job.task.to.agent, 'getPosition');
+        console.log('toPosition', toPosition);
+        yield Agent.move(toPosition);
         yield requestTake(job.task.to.agent, job.task.to.taskId);
+
         _.remove(Agent.taskList, {taskId: job.taskId});
         develop('task successfully finished. removed. taskList:', Agent.taskList);
         resolve({inform: 'done'});

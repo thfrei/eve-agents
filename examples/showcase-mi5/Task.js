@@ -36,37 +36,21 @@ Promise.all([Agent.ready]).then(function () {
   order.orderId = uuid();
   order.recipe = [
     {
-      service: 'bottleInput',
+      service: 'containerInput',
       parameters: {
-        bottleType: 'longneck', size: 300
-      }
-    },
-    {
-      service: 'print',
-      execute: true,
-      parameters: {
-        logo: '1.gif',
-        bottleType: 'longneck', size: 300
+        bottleType: 'mi5cup'
       }
     },
     {
       service: 'fill',
       execute: true,
       parameters: {
-        liquids: [{type: 'lemonade', amount: 150}, {type: 'weissbier', amount: 150}]
+        liquids: [{type: 'lemon', amount: 150}, {type: 'pineapple', amount: 150}]
       }
     },
-    //{
-    //  service: 'close',
-    //  parameters: {
-    //    bottletype: 'longneck'
-    //  }
-    //},
     {
-      service: 'bottleOutput',
-      parameters: {
-        size: 300
-      }
+      service: 'containerOutput',
+      parameters: {}
     }
   ];
 

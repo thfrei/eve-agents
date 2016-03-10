@@ -11,7 +11,7 @@ const co = require('co');
 let GeneralAgent = require('./../../agents/GeneralAgent');
 
 var agentOptions = {
-  id: 'Filler'+uuid(),
+  id: 'BeckTopping',
   DF: config.DF,
   transports: [
     {
@@ -25,9 +25,8 @@ var agentOptions = {
 
 var Agent = new GeneralAgent(agentOptions);
 
-Agent.liquids = [
-  {type: 'lemonade', amount: '10000'},
-  {type: 'weissbier', amount: '10000'}
+Agent.products = [
+  {type: 'marmelade', amount: '10000'}
 ];
 Agent.taskList = [];
 
@@ -43,7 +42,7 @@ Agent.execute = function(){
 Promise.all([Agent.ready]).then(function () {
   Agent.events.on('registered',console.log);
 
-  Agent.skillAddCAcfpParticipant('cfp-fill', checkParameters, reserve);
+  Agent.skillAddCAcfpParticipant('cfp-topping', checkParameters, reserve);
 
 
   function checkParameters (message, context) {

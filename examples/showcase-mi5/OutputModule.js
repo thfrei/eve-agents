@@ -10,7 +10,7 @@ const uuid = require('uuid-v4');
 let GeneralAgent = require('./../../agents/GeneralAgent');
 
 var agentOptions = {
-  id: 'Output'+uuid(),
+  id: 'Output',
   DF: config.DF,
   transports: [
     {
@@ -25,6 +25,7 @@ var agentOptions = {
 // TODO implement unreserve and other
 var Agent = new GeneralAgent(agentOptions);
 
+Agent.position = 2000;
 Agent.bottles = [
   {bottleType: '*'}
 ];
@@ -33,6 +34,7 @@ Agent.taskList = [];
 Promise.all([Agent.ready]).then(function () {
   Agent.events.on('registered',console.log);
 
+  Agent.skillAdd('getPosition', function(){ return Agent.position; });
   Agent.skillAddCAcfpParticipant('cfp-containerOutput', checkParameters, reserve);
 
 

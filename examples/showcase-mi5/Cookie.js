@@ -11,7 +11,7 @@ const co = require('co');
 let GeneralAgent = require('./../../agents/GeneralAgent');
 
 var agentOptions = {
-  id: 'Cookie'+uuid(),
+  id: 'Cookie',
   DF: config.DF,
   transports: [
     {
@@ -43,7 +43,7 @@ Agent.execute = function(){
 Promise.all([Agent.ready]).then(function () {
   Agent.events.on('registered',console.log);
 
-  Agent.skillAddCAcfpParticipant('cfp-fill', checkParameters, reserve);
+  Agent.skillAddCAcfpParticipant('cfp-cookie', checkParameters, reserve);
 
 
   function checkParameters (message, context) {
