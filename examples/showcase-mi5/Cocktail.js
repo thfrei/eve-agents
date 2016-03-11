@@ -48,7 +48,7 @@ opcua.connect('opc.tcp://localhost:4334/')
   })
   .catch(console.error);
 
-Agent.execute = function(job){
+Agent.opcuaExecute = function(job){
 
   return co(function* () {
     console.log('execute.......', JSON.stringify(job));
@@ -61,7 +61,7 @@ Agent.execute = function(job){
     let done = yield opcua.monitor(subscription, 'MI5.Module2501.Output.SkillOutput.SkillOutput0.Done');
     yield new Promise(function(resolve, reject) {
       done.on('changed', function(data){
-        //console.log(data);
+        console.log(data);
         if (data.value.value == true) {
           subscription.terminate();
           resolve();
@@ -145,7 +145,7 @@ Promise.all([Agent.ready]).then(function () {
         if(typeof job == 'undefined') {
           throw new Error('job was not found in taskList:', Agent.taskList);
         }
-        yield Agent.execute(job);
+        yield Agent.opcuaExecute(job);
         _.remove(Agent.taskList, {taskId: job.taskId});
         develop('task successfully finished. removed. taskList:', Agent.taskList);
         resolve({inform: 'done'});

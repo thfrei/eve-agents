@@ -27,20 +27,11 @@ var agentOptions = {
 //TODO implement reserve/unreserve services (xts is different from handling robot, because the mover will be reserved during complete production
 var Agent = new GeneralAgent(agentOptions);
 
-// discrete Positions that the Handling Robot can reach
-Agent.positions = [1,5,10,15,20,30,40,50,70,80,90,99];
 Agent.taskList = [];
 
 Agent.move = function(position){
   return new Promise( (resolve, reject) => {
-    // if position can be reached
-    if ( _.indexOf(Agent.positions, position) != -1 || true ) {
-      console.log('!!!!!!!!!!!!!! ==== moving... 1s');
-
-      setTimeout(resolve, 500);
-    } else {
-      reject({err: 'position cannot be reached'});
-    }
+    setTimeout(resolve, 500);
   });
 };
 

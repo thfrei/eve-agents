@@ -12,7 +12,7 @@ const uuid = require('uuid-v4');
 let GeneralAgent = require('./../../agents/GeneralAgent');
 
 var agentOptions = {
-  id: 'Order'+uuid(),
+  id: 'Order',
   DF: config.DF,
   transports: [
     {
@@ -36,6 +36,10 @@ Promise.all([Agent.ready]).then(function () {
   order.orderId = uuid();
   order.recipe = [
     {
+      service: 'reserveMover',
+      parameters: []
+    },
+    {
       service: 'containerInput',
       parameters: {
         bottleType: 'mi5cup'
@@ -47,6 +51,10 @@ Promise.all([Agent.ready]).then(function () {
       parameters: {
         liquids: [{type: 'lemon', amount: 150}, {type: 'pineapple', amount: 150}]
       }
+    },
+    {
+      service: 'unReserveMover',
+      parameters: []
     },
     {
       service: 'containerOutput',
