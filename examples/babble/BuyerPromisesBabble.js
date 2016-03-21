@@ -33,7 +33,7 @@ Promise.all([Agent.ready]).then(function () {
     let conv = 'cfp-book-trading';
     let obj = {title: 'Harry Potter'};
     let sellers = yield Agent.searchSkill(conv);
-    console.log(sellers);
+    console.log('Found this seller agents:', sellers);
 
     // ask all sellers for book (conv, obj)
     let propositions = yield Promise.all(_.map(sellers, (seller) => {

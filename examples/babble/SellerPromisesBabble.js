@@ -29,9 +29,6 @@ Promise.all([Agent.ready]).then(function () {
 
   Agent.books = [
     {title: 'Harry Potter', price: Math.random()},
-    {title: 'Harry Potter', price: Math.random()},
-    {title: 'Faust', price: Math.random()},
-    {title: 'Faust', price: Math.random()},
     {title: 'Faust', price: Math.random()},
     {title: 'Kabale und Liebe', price: Math.random()}
   ];
@@ -64,14 +61,6 @@ Promise.all([Agent.ready]).then(function () {
         resolve({failure: 'book could not be fetched in stock'}); // refuse
       }
     }).catch(console.error);
-  }
-
-  Agent.CArequestParticipant('request-give', give);
-  function give(message, context){
-    develop('#give', message, context);
-    return new Promise((resolve, reject) => {
-      resolve({inform: 'here you have it'});
-    });
   }
 
   // Register Skills
