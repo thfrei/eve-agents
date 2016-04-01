@@ -41,14 +41,14 @@ Promise.all([Agent.ready]).then(function () {
         bottleType: 'longneck', size: 300
       }
     },
-    {
-      service: 'print',
-      execute: true,
-      parameters: {
-        logo: '1.gif',
-        bottleType: 'longneck', size: 300
-      }
-    },
+    //{
+    //  service: 'print',
+    //  execute: true,
+    //  parameters: {
+    //    logo: '1.gif',
+    //    bottleType: 'longneck', size: 300
+    //  }
+    //},
     {
       service: 'fill',
       execute: true,
@@ -67,6 +67,8 @@ Promise.all([Agent.ready]).then(function () {
   // Business Logic
   co(function* () {
     "use strict";
+    let startReal = Date.now();
+    let start = Agent.timer.getTime();
     // Negotiate every entry in recipe and find an agent
     let agents = yield _.map(order.recipe, negotiate);
     console.log('agents', agents);
@@ -89,8 +91,12 @@ Promise.all([Agent.ready]).then(function () {
       }
       return Promise.resolve(done);
     }));
+    let end = Agent.timer.getTime();
+    let endReal = Date.now();
     console.log('HHHHHHHHUUUUUUUUURRRRRRRRRRAAAAAAAAAAAHHHHHHHHHHHHH!!!!!!!!!!!!');
     console.log('HHHHHHHHUUUUUUUUURRRRRRRRRRAAAAAAAAAAAHHHHHHHHHHHHH!!!!!!!!!!!!');
+    console.log('duration: ', end-start,'ms');
+    console.log('real: ', endReal-startReal, 'ms');
   }).catch(console.error);
 
   function negotiate (task) {

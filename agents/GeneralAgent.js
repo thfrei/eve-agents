@@ -1,14 +1,12 @@
 "use strict";
 
-// we need to load the babble instance out from evejs, otherwise we cannot use babble.tell in a decision block;
-//const babble = require('./../node_modules/evejs/node_modules/babble');
-//const babble = require('babble');
 const develop = require('debug')('develop');
 const _ = require('underscore');
 const Promise = require('bluebird');
 let co = require('co');
 let eve = require('evejs');
 const mqtt = require('mqtt');
+const hypertimer = require('hypertimer');
 
 const EventEmitter = require('events').EventEmitter;
 
@@ -18,12 +16,15 @@ function Agent(agent) {
 
   // Setup transports
   eve.system.init({
-    transports: agent.transports,
-    timer: {
-      paced: false,
-      deterministic: true
-    }
+    transports: agent.transports
   });
+  eve.system.timer = hypertimer({
+    rate: 1,
+    time: '2015-01-14T12:00:00.000Z',
+    paced: true,
+    deterministic: true,
+  });
+  this.timer = eve.system.timer;
 
   // MQTT Connection
   if(agent.mqtt) {
@@ -334,8 +335,10 @@ Agent.prototype.CArequestParticipant = function (conversation, executeRequest) {
 
 // Helper
 Agent.prototype.sendToSniffer = function (obj) {
+  let sniff = obj;
+  sniff.time = this.timer.getTime();
   if(this.mqtt) {
-    this.mqtt.publish('sniffer', JSON.stringify(obj));
+    this.mqtt.publish('sniffer', JSON.stringify(sniff));
   }
 };
 
