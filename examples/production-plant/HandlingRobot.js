@@ -36,7 +36,7 @@ Agent.move = function(position){
     if ( _.indexOf(Agent.positions, position) != -1 ) {
       console.log('!!!!!!!!!!!!!! ==== moving... 1s');
 
-      Agent.timer.setTimeout(resolve, 1000);
+      Agent.timer.setTimeout(resolve, 0);
     } else {
       reject({err: 'position cannot be reached'});
     }
