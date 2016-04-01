@@ -11,7 +11,7 @@ const co = require('co');
 const retry = require('co-retry');
 let GeneralAgent = require('./../../agents/GeneralAgent');
 
-var agentOptions = {
+const agentOptions = {
   id: 'HandlingRobot'+uuid(),
   DF: config.DF,
   transports: [
@@ -24,7 +24,7 @@ var agentOptions = {
   mqtt: config.mqttHost
 };
 
-var Agent = new GeneralAgent(agentOptions);
+let Agent = new GeneralAgent(agentOptions);
 
 // discrete Positions that the Handling Robot can reach
 Agent.positions = [1,5,10,15,20,30,40,50,70,80,90,99];

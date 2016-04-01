@@ -9,7 +9,7 @@ const Promise = require('bluebird');
 const uuid = require('uuid-v4');
 let GeneralAgent = require('./../../agents/GeneralAgent');
 
-var agentOptions = {
+const agentOptions = {
   id: 'BottleOutput'+uuid(),
   DF: config.DF,
   transports: [
@@ -22,7 +22,7 @@ var agentOptions = {
   mqtt: config.mqttHost
 };
 
-var Agent = new GeneralAgent(agentOptions);
+let Agent = new GeneralAgent(agentOptions);
 
 Agent.bottles = [
   {bottleType: '*'}
@@ -44,8 +44,9 @@ Promise.all([Agent.ready]).then(function () {
         develop('offer:', offer);
         resolve({propose: offer });
       } else {
-        develop('not in stock');
-        resolve({refuse: 'not in stock'});
+        let msg = 'task cannot be performed';
+        develop(msg);
+        resolve({failure: msg});
       }
     }).catch(console.error);
   }
@@ -59,10 +60,11 @@ Promise.all([Agent.ready]).then(function () {
 
       if(true) {
         develop('inform-result:', task);
-        resolve({informDone: task}); // propose
+        resolve({inform: task}); // propose
       } else {
-        develop('book could not be fetched in stock');
-        resolve({failure: 'book could not be fetched in stock'}); // refuse
+        let msg = 'task could not be reserved';
+        develop(msg);
+        resolve({failure: msg});
       }
     }).catch(console.error);
   }

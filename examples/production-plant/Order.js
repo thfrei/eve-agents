@@ -41,14 +41,14 @@ Promise.all([Agent.ready]).then(function () {
         bottleType: 'longneck', size: 300
       }
     },
-    //{
-    //  service: 'print',
-    //  execute: true,
-    //  parameters: {
-    //    logo: '1.gif',
-    //    bottleType: 'longneck', size: 300
-    //  }
-    //},
+    {
+      service: 'print',
+      execute: true,
+      parameters: {
+        logo: '1.gif',
+        bottleType: 'longneck', size: 300
+      }
+    },
     {
       service: 'fill',
       execute: true,
@@ -56,12 +56,6 @@ Promise.all([Agent.ready]).then(function () {
         liquids: [{type: 'lemonade', amount: 150}, {type: 'weissbier', amount: 150}]
       }
     },
-    //{
-    //  service: 'close',
-    //  parameters: {
-    //    bottletype: 'longneck'
-    //  }
-    //},
     {
       service: 'bottleOutput',
       parameters: {
@@ -161,7 +155,7 @@ Promise.all([Agent.ready]).then(function () {
         let inform = yield Agent.CAcfpAcceptProposal(bestOffer.agent, conversation, task.parameters);
         console.log(inform);
 
-        let agent = {taskId: inform.informDone.taskId, agent: bestOffer.agent};
+        let agent = {taskId: inform.inform.taskId, agent: bestOffer.agent};
         if(task.execute) {
           agent.execute = task.execute;
         }

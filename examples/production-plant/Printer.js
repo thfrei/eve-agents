@@ -10,7 +10,7 @@ const uuid = require('uuid-v4');
 const co = require('co');
 let GeneralAgent = require('./../../agents/GeneralAgent');
 
-var agentOptions = {
+const agentOptions = {
   id: 'Printer'+uuid(),
   DF: config.DF,
   transports: [
@@ -23,7 +23,7 @@ var agentOptions = {
   mqtt: config.mqttHost
 };
 
-var Agent = new GeneralAgent(agentOptions);
+let Agent = new GeneralAgent(agentOptions);
 
 Agent.fileFormats = [
   {type: 'jpg'},
@@ -45,7 +45,6 @@ Promise.all([Agent.ready]).then(function () {
 
   Agent.skillAddCAcfpParticipant('cfp-print', checkParameters, reserve);
 
-
   function checkParameters (message, context) {
     return new Promise( (resolve, reject) => {
       develop('#checkParams', message, context);
@@ -55,8 +54,9 @@ Promise.all([Agent.ready]).then(function () {
         develop('offer:', offer);
         resolve({propose: offer });
       } else {
-        develop('not in stock');
-        resolve({refuse: 'not in stock'});
+        let msg = 'task cannot be performed';
+        develop(msg);
+        resolve({refuse: msg});
       }
     }).catch(console.error);
   }
@@ -69,11 +69,12 @@ Promise.all([Agent.ready]).then(function () {
       Agent.taskList.push(task);
 
       if(true) {
-        develop('inform-result:', task);
-        resolve({informDone: task}); // propose
+        develop('inform:', task);
+        resolve({inform: task});
       } else {
-        develop('book could not be fetched in stock');
-        resolve({failure: 'book could not be fetched in stock'}); // refuse
+        let msg = 'task could not be reserved';
+        develop(msg);
+        resolve({failure: msg});
       }
     }).catch(console.error);
   }
