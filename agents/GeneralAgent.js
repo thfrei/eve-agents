@@ -6,7 +6,6 @@ const Promise = require('bluebird');
 let co = require('co');
 let eve = require('evejs');
 const mqtt = require('mqtt');
-//const hypertimer = require('hypertimer');
 
 const EventEmitter = require('events').EventEmitter;
 
@@ -18,12 +17,6 @@ function Agent(agent) {
   eve.system.init({
     transports: agent.transports
   });
-  //eve.system.timer = hypertimer({
-  //  rate: 1,
-  //  time: '2015-01-14T12:00:00.000Z',
-  //  paced: true,
-  //  deterministic: true,
-  //});
   this.timer = {};
   this.timer.setTimeout = setTimeout;
   this.timer.getTime = Date.now;
