@@ -5,6 +5,10 @@ const config = require('./../../config.js');
 const _ = require('lodash');
 const babble = require('babble');
 const develop = require('debug')('develop');
+const verbose = require('debug')('verbose');
+const time = require('debug')('time');
+time.log = console.log.bind(console); // don't forget to bind to console!
+
 const Promise = require('bluebird');
 const co = require('co');
 const retry = require('co-retry');
@@ -70,30 +74,35 @@ Promise.all([Agent.ready]).then(function () {
     let startReal = Date.now();
     let start = Agent.timer.getTime();
     // Negotiate every entry in recipe and find an agent
+    time('TIME Start', Agent.timer.getTime()-start, 'ms');
     let agents = yield _.map(order.recipe, negotiate);
-    console.log('agents', agents);
+    time('TIME Negotiation', Agent.timer.getTime()-start, 'ms');
+    verbose('agents', agents);
     // Edges of network. Ways that we need to travel:
     let edges = computeEdges(agents);
-    console.log('edges', edges);
+    verbose('edges', edges);
     // Execute travel edges
     yield Promise.each(edges, co.wrap(function* (edge) { //wrap a generator function into a promise
     //yield forEach(edges, function* (edge) {
-      console.log('edgesforeach',edge);
+      verbose('edgesforeach',edge);
       // Negotiate for transport agent:
+      time('TIME Start Edge - negotiateTransport', Agent.timer.getTime()-start);
       let task = yield negotiateTransportation(edge);
-      console.log('negotiated task', task);
+      verbose('negotiated task', task);
+      time('TIME Edge - negotiateTransport End', Agent.timer.getTime()-start);
       let done = yield Agent.CArequest(task.agent, 'request-execute', {taskId: task.taskId});
-      console.log('edge complete', done);
+      verbose('edge complete', done);
       // Now execute the main-task
+      time('TIME Execute', Agent.timer.getTime()-start);
       if(edge.to.execute) {
         let mainDone = yield Agent.CArequest(edge.to.agent, 'request-execute', {taskId: edge.to.taskId});
-        console.log('mainDone', mainDone);
+        verbose('mainDone', mainDone);
+        time('TIME Execute Main', Agent.timer.getTime()-start);
       }
       return Promise.resolve(done);
     }));
     let end = Agent.timer.getTime();
     let endReal = Date.now();
-    console.log('HHHHHHHHUUUUUUUUURRRRRRRRRRAAAAAAAAAAAHHHHHHHHHHHHH!!!!!!!!!!!!');
     console.log('HHHHHHHHUUUUUUUUURRRRRRRRRRAAAAAAAAAAAHHHHHHHHHHHHH!!!!!!!!!!!!');
     console.log('duration: ', end-start,'ms');
     console.log('real: ', endReal-startReal, 'ms');
@@ -132,11 +141,7 @@ Promise.all([Agent.ready]).then(function () {
   }
 
   function cfpMinPrice (conversation, task) {
-    "use strict";
-
     return co(function* () {
-      "use strict";
-
       let participants = yield Agent.searchSkill(conversation);
       develop('participants for ', conversation, ': ', participants);
 
@@ -144,7 +149,7 @@ Promise.all([Agent.ready]).then(function () {
       let propositions = yield Promise.all(_.map(participants, (participant) => {
         return Agent.CAcfp(participant.agent, conversation, task.parameters);
       }));
-      console.log('propositions', propositions);
+      verbose('propositions', propositions);
 
       // Filter refused cfps
       _.remove(propositions, (prop) => { if(prop.refuse) { return true; }});
@@ -159,7 +164,7 @@ Promise.all([Agent.ready]).then(function () {
 
         // Tell participant with bestoffer to reserve
         let inform = yield Agent.CAcfpAcceptProposal(bestOffer.agent, conversation, task.parameters);
-        console.log(inform);
+        verbose(inform);
 
         let agent = {taskId: inform.inform.taskId, agent: bestOffer.agent};
         if(task.execute) {

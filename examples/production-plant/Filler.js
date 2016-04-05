@@ -3,7 +3,6 @@
 const config = require('./../../config.js');
 
 const _ = require('lodash');
-const babble = require('babble');
 const develop = require('debug')('develop');
 const Promise = require('bluebird');
 const uuid = require('uuid-v4');
@@ -35,7 +34,7 @@ Agent.execute = function(){
   return new Promise( (resolve, reject) => {
     // if position can be reached
       console.log('execute.......');
-      //console.log(Agent.timer.getTime());
+      console.log(Agent.timer.getTime());
       Agent.timer.setTimeout(resolve, 0);
 
   });
