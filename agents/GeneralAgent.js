@@ -54,10 +54,10 @@ Agent.prototype.rpcFunctions.dummy = function(params, from) {
   return {err: 'dummy not yet implemented'};
 };
 
-// Service Handling ===============================================================
+// Service Handling  =======================================================
 /**
  * add a service to an agent
- * @param name [string] name of skill
+ * @param name [string] name of service
  * @param func [function] func(params, from)
  */
 Agent.prototype.serviceAdd = function(name, func){
@@ -67,9 +67,7 @@ Agent.prototype.serviceAdd = function(name, func){
 Agent.prototype.getServices = function(){
   return this.services;
 };
-// Skill Handling End ===========================================================
 
-// Default Functions ============================================================
 Agent.prototype.register = function(){
   // Register services
   var self = this;
@@ -107,7 +105,7 @@ Agent.prototype.searchService = function(service){
       if(reply.err) {
         throw new Error('#search could not be performed' + reply.err);
       } else if(_.isEmpty(reply)) {
-        throw new Error('no skill was found. skill:'+service);
+        throw new Error('no service was found. service:'+service);
       } else {
         develop('#search service:',service,':',reply);
         return Promise.resolve(reply);
@@ -135,7 +133,7 @@ Agent.prototype.request = function(to, method, params) {
       throw new Error('RPC Timeout? Or Agent.request internal error. err='+err);
     });
 };
-// Behaviour End ================================================================
+// Service Handling End =========================================================
 
 // Conversation Patterns  =======================================================
 // cfp

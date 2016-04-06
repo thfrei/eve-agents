@@ -40,7 +40,6 @@ DFAgent.prototype.rpcFunctions = {};
 // =================================================
 
 /**
- *
  * @param params {services: ['fillBottle','loadBottle','unLoadBottle',...]
  * @param from
  * @returns {*}
@@ -77,7 +76,7 @@ DFAgent.prototype.rpcFunctions.deRegister = function(params, from){
 };
 
 /**
- * find agent for skill
+ * find agent for service
  *
  * @param params {service: 'service'}
  * @param from
