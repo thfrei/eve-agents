@@ -55,8 +55,8 @@ Buyer.execute(Buyer.agent.register)// makes this in function == Buyer
 //
 //  return new Promise(function(resolve, reject){
 //    self.agent.searchSkill('cfp-book-trading')
-//      .then((skills)=> {
-//        skills.forEach((skill)=> {
+//      .then((services)=> {
+//        services.forEach((skill)=> {
 //
 //          self.agent.tell(skill.agent, 'cfp-book-trading')
 //            .tell(function (message, context) {

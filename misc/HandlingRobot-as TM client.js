@@ -54,7 +54,7 @@ Agent.move = function(position){
 Promise.all([Agent.ready]).then(function () {
   Agent.events.on('registered',console.log);
 
-  //Agent.skillAddCAcfpParticipant('exe-transport', reserve, move);
+  //Agent.serviceAddCAcfpParticipant('exe-transport', reserve, move);
   //function reserve (message, context) {
   //  develop(message, context);
   //  if(Agent.fsm.is('ready')){

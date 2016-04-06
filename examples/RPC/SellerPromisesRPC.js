@@ -34,9 +34,9 @@ Promise.all([Agent.ready]).then(function () {
     {title: 'Kabale und Liebe', price: Math.random()}
   ];
 
-  Agent.skillAdd('sell', Promise.resolve('group sell'));
+  Agent.serviceAdd('sell', Promise.resolve('group sell'));
 
-  Agent.skillAdd('query', query);
+  Agent.serviceAdd('query', query);
   function query(params, sender){
     develop('query', params, sender);
     var self = Agent;
@@ -53,7 +53,7 @@ Promise.all([Agent.ready]).then(function () {
     });
   }
 
-  Agent.skillAdd('buy', buy);
+  Agent.serviceAdd('buy', buy);
   function buy(params, sender){
     develop('buy', params, sender);
     var self = Agent;

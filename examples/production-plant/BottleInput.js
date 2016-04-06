@@ -32,7 +32,7 @@ Agent.taskList = [];
 Promise.all([Agent.ready]).then(function () {
   Agent.events.on('registered',console.log);
 
-  Agent.skillAddCAcfpParticipant('cfp-bottleInput', checkParameters, reserve);
+  Agent.serviceAddCAcfpParticipant('cfp-bottleInput', checkParameters, reserve);
 
   function checkParameters (message, context) {
     return new Promise( (resolve, reject) => {
@@ -76,7 +76,7 @@ Promise.all([Agent.ready]).then(function () {
     });
   }
 
-  // Register Skills
+  // Register Services
   Agent.register()
     .catch(console.log);
 

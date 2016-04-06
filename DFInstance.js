@@ -7,7 +7,6 @@ const config = require('./config.js');
 const develop = require('debug')('develop');
 const Promise = require('bluebird');
 let DFAgent = require('./agents/DFAgent');
-const _ = require('lodash');
 
 const options = {
   id: config.DF, // TODO find out, why on localhost DF is now blocked?

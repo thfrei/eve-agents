@@ -115,7 +115,7 @@ Promise.all([Agent.ready]).then(function () {
   }
 
   function negotiateTransportation(edge) {
-    return Agent.searchSkill('cfp-transport')
+    return Agent.searchService('cfp-transport')
       .then((agents) => {
         return agents[0];
       })
@@ -142,7 +142,7 @@ Promise.all([Agent.ready]).then(function () {
 
   function cfpMinPrice (conversation, task) {
     return co(function* () {
-      let participants = yield Agent.searchSkill(conversation);
+      let participants = yield Agent.searchService(conversation);
       develop('participants for ', conversation, ': ', participants);
 
       // ask all participants for objective

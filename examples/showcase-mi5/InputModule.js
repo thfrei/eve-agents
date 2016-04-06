@@ -34,7 +34,7 @@ Agent.taskList = [];
 Promise.all([Agent.ready]).then(function () {
   Agent.events.on('registered',console.log);
 
-  Agent.skillAdd('getPosition', function(){ return Agent.position; });
+  Agent.serviceAdd('getPosition', function(){ return Agent.position; });
   Agent.skillAddCAcfpParticipant('cfp-containerInput', checkParameters, reserve);
 
   function checkParameters (message, context) {

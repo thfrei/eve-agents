@@ -27,7 +27,7 @@ function RequestAgent(id) {
   this.events = new EventEmitter();
 
   this._conversations = [];
-  this._skills = [];
+  this.services = [];
 
   this._DF = '';
   this.getDF = function() { return this._DF; };
@@ -86,16 +86,16 @@ RequestAgent.prototype.getConversationHandlers = function(){
  * @param handler [function] func(params, from)
  */
 RequestAgent.prototype.addSkill = function(name, handler){
-  this._skills.push({skill: name, handler: handler});
+  this.services.push({skill: name, handler: handler});
 };
 RequestAgent.prototype.getSkills = function(){
-  return this._skills;
+  return this.services;
 };
 RequestAgent.prototype.getSkillNames = function(){
-  return _.map(this._skills, (skill) => {return skill.skill;});
+  return _.map(this.services, (skill) => {return skill.skill;});
 };
 RequestAgent.prototype.getSkillHandlerss = function(){
-  return _.map(this._skills, (skill) => {return skill.handler;});
+  return _.map(this.services, (skill) => {return skill.handler;});
 };
 
 /**

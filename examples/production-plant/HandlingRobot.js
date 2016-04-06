@@ -46,8 +46,7 @@ Agent.move = function(position){
 Promise.all([Agent.ready]).then(function () {
   Agent.events.on('registered',console.log);
 
-  //Agent.skillAdd('cfp-transport', Promise.reject('listener agent'));
-  Agent.skillAddCAcfpParticipant('cfp-transport', calculatePrice, reserveTransport);
+  Agent.serviceAddCAcfpParticipant('cfp-transport', calculatePrice, reserveTransport);
   Agent.register();
   function calculatePrice (message, context) {
     return new Promise((resolve, reject) => {
@@ -118,12 +117,6 @@ Promise.all([Agent.ready]).then(function () {
     develop('requestTake', participant, taskId);
     return Agent.CArequest(participant, 'request-take', taskId);
   }
-
-
-
-  //co(function* (){
-  //  // Main control flow behaviour
-  //}).catch(console.error);
 
   // deRegister upon exiting
   process.on('SIGINT', function(){

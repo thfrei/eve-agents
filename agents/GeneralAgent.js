@@ -27,7 +27,7 @@ function Agent(agent) {
     this.mqtt = mqtt.connect(agent.mqtt);
   }
 
-  this._skills = [];
+  this.services = [];
 
   // set Directory Facilitator
   this.DF = agent.DF;
@@ -48,34 +48,32 @@ function Agent(agent) {
 Agent.prototype = Object.create(eve.Agent.prototype);
 Agent.prototype.constructor = Agent; // not needed?
 
-// Services =====================================================================
 Agent.prototype.rpcFunctions = {};
 Agent.prototype.rpcFunctions.dummy = function(params, from) {
   console.log('#dummy - RPC from:', from, params);
   return {err: 'dummy not yet implemented'};
 };
-// Services End =================================================================
 
-// Skill Handling ===============================================================
+// Service Handling ===============================================================
 /**
- * add a skill to an agent
+ * add a service to an agent
  * @param name [string] name of skill
  * @param func [function] func(params, from)
  */
-Agent.prototype.skillAdd = function(name, func){
-  this._skills.push(name);
+Agent.prototype.serviceAdd = function(name, func){
+  this.services.push(name);
   this.rpcFunctions[name] = func;
 };
-Agent.prototype.getSkills = function(){
-  return this._skills;
+Agent.prototype.getServices = function(){
+  return this.services;
 };
 // Skill Handling End ===========================================================
 
 // Default Functions ============================================================
 Agent.prototype.register = function(){
-  // Register _skills
+  // Register services
   var self = this;
-  return this.request(this.DF, 'register', {skills: this._skills})
+  return this.request(this.DF, 'register', {services: this.services})
     .then(function(reply){
       console.log(reply);
       if(reply.err) throw new Error('#register could not be performed: ' + reply.err);
@@ -89,7 +87,7 @@ Agent.prototype.register = function(){
 };
 
 Agent.prototype.deRegister = function(){
-  // Deregister _skills
+  // Deregister services
   var self = this;
   //return new Promise((resolve, reject)=>{
   return this.request(this.DF, 'deRegister')
@@ -103,15 +101,15 @@ Agent.prototype.deRegister = function(){
     });
 };
 
-Agent.prototype.searchSkill = function(skill){
-  return this.request(this.DF,'search', {skill: skill})
+Agent.prototype.searchService = function(service){
+  return this.request(this.DF,'search', {service: service})
     .then(function(reply){
       if(reply.err) {
         throw new Error('#search could not be performed' + reply.err);
       } else if(_.isEmpty(reply)) {
-        throw new Error('no skill was found. skill:'+skill);
+        throw new Error('no skill was found. skill:'+service);
       } else {
-        develop('#search skill:',skill,':',reply);
+        develop('#search service:',service,':',reply);
         return Promise.resolve(reply);
       }
     });
@@ -252,8 +250,8 @@ Agent.prototype.CAcfpAcceptProposalListener = function (conversation, doAccept) 
  * @param cfpListener function(message, context)
  * @param acceptListener function(message, context)
  */
-Agent.prototype.skillAddCAcfpParticipant = function(conversation, cfpListener, acceptListener) {
-  this.skillAdd(conversation, '');
+Agent.prototype.serviceAddCAcfpParticipant = function(conversation, cfpListener, acceptListener) {
+  this.serviceAdd(conversation, '');
 
   this.CAcfpListener(conversation, cfpListener);
   this.CAcfpAcceptProposalListener(conversation, acceptListener);

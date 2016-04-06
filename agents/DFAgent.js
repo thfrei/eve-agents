@@ -24,7 +24,7 @@ function DFAgent(options) {
   }
 
   // Properties =======================================================
-  this._agents = []; // [{agent: name, _skills: [skill1, 2, 3]},{...}]
+  this._agents = []; // [{agent: name, services: [service1, 2, 3]},{...}]
 
   // EventEmitter
   this.events = new EventEmitter();
@@ -41,15 +41,15 @@ DFAgent.prototype.rpcFunctions = {};
 
 /**
  *
- * @param params {_skills: ['fillBottle','loadBottle','unLoadBottle',...]
+ * @param params {services: ['fillBottle','loadBottle','unLoadBottle',...]
  * @param from
  * @returns {*}
  */
 DFAgent.prototype.rpcFunctions.register = function(params, from){
   console.log('Agent', from, 'wants to register itself. params:',params);
 
-  if(!_.isArray(params.skills)){
-    var err = 'params._skills is not an array, please verify';
+  if(!_.isArray(params.services)){
+    var err = 'params.services is not an array, please verify';
     return {err: err};
   }
 
@@ -61,9 +61,9 @@ DFAgent.prototype.rpcFunctions.register = function(params, from){
   }
   else {
     this.events.emit('registered', from);
-    this._agents.push({agent: from, skills: params.skills});
+    this._agents.push({agent: from, services: params.services});
     this.events.emit('agentsChanged', this._agents);
-    return {status: 'ok', description: 'agent has been registered with skills: '+JSON.stringify(params.skills), skills: params.skills};
+    return {status: 'ok', description: 'agent has been registered with services: '+JSON.stringify(params.services), services: params.services};
   }
 };
 
@@ -79,16 +79,16 @@ DFAgent.prototype.rpcFunctions.deRegister = function(params, from){
 /**
  * find agent for skill
  *
- * @param params {skill: 'skill'}
+ * @param params {service: 'service'}
  * @param from
  */
 DFAgent.prototype.rpcFunctions.search = function(params, from) {
-  console.log('Agent', from, 'wants to get all agents for', params.skill);
+  console.log('Agent', from, 'wants to get all agents for', params.service);
 
   // returns all skill-agent combinations with the required skill
   var found =  _.filter(this._agents, function(entry){
-    // If skill can be found in _skills-array
-    if(_.indexOf(entry.skills, params.skill) != -1) {
+    // If skill can be found in services-array
+    if(_.indexOf(entry.services, params.service) != -1) {
       return true;
     }
   });

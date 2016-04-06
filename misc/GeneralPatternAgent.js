@@ -21,7 +21,7 @@ function Agent(agent) {
     transports: agent.transports
   });
 
-  this._skills = [];
+  this.services = [];
 
   // set Directory Facilitator
   this.DF = agent.DF;
@@ -90,31 +90,31 @@ Agent.prototype.rpcFunctions.cfp = function(params, from) {
  * @param name [string] name of skill
  * @param func [function] func(params, from)
  */
-Agent.prototype.skillAdd = function(name, func){
-  this._skills.push(name);
+Agent.prototype.serviceAdd = function(name, func){
+  this.services.push(name);
   this.rpcFunctions[name] = func;
 };
 Agent.prototype.getSkills = function(){
-  return this._skills;
+  return this.services;
 };
 // Skill Handling End ===========================================================
 
 // Default Functions ============================================================
 Agent.prototype.register = function(){
-  // Register _skills
+  // Register services
   var self = this;
-  return this.rpc.request(this.DF,{method: 'register', params: {skills: this._skills}})
+  return this.rpc.request(this.DF,{method: 'register', params: {services: this.services}})
     .then(function(reply){
       if(reply.err) throw new Error('#register could not be performed: ' + reply.err);
       else {
-        let ret = 'register successfull with:'+JSON.stringify(self._skills);
+        let ret = 'register successfull with:'+JSON.stringify(self.services);
         self.events.emit('registered', ret);
         return Promise.resolve(ret);
       }
     });
 };
 Agent.prototype.deRegister = function(){
-  // Deregister _skills
+  // Deregister services
   var self = this;
   //return new Promise((resolve, reject)=>{
   return this.rpc.request(this.DF, {method: 'deRegister'})
