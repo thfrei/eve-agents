@@ -39,12 +39,12 @@ Promise.all([Agent.ready]).then(function () {
   let order = {};
   order.orderId = uuid();
   order.recipe = [
-    {
-      service: 'bottleInput',
-      parameters: {
-        bottleType: 'longneck', size: 300
-      }
-    },
+    //{
+    //  service: 'bottleInput',
+    //  parameters: {
+    //    bottleType: 'longneck', size: 300
+    //  }
+    //},
     //{
     //  service: 'print',
     //  execute: true,
@@ -60,12 +60,12 @@ Promise.all([Agent.ready]).then(function () {
         liquids: [{type: 'lemonade', amount: 150}, {type: 'weissbier', amount: 150}]
       }
     },
-    {
-      service: 'bottleOutput',
-      parameters: {
-        size: 300
-      }
-    }
+    //{
+    //  service: 'bottleOutput',
+    //  parameters: {
+    //    size: 300
+    //  }
+    //}
   ];
 
   // Business Logic
@@ -147,7 +147,12 @@ Promise.all([Agent.ready]).then(function () {
 
       // ask all participants for objective
       let propositions = yield Promise.all(_.map(participants, (participant) => {
-        return Agent.CAcfp(participant.agent, conversation, task.parameters);
+        return Agent.CAcfp(participant.agent, conversation, task.parameters)
+          .timeout(1000)
+          .catch(Promise.TimeoutError, function(e) {
+            console.log("agent is not reachable within 1000ms");
+            return Promise.resolve('');
+          });
       }));
       verbose('propositions', propositions);
 

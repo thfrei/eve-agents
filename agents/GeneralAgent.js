@@ -133,9 +133,9 @@ Agent.prototype.request = function(to, method, params) {
       throw new Error('RPC Timeout? Or Agent.request internal error. err='+err);
     });
 };
-// Service Handling End =========================================================
+// Service Handling End =================================================
 
-// Conversation Patterns  =======================================================
+// Communicative Acts ===================================================
 // cfp
 Agent.prototype.CAcfp = function(seller, conversation, objective){
   console.log('CAcfp', seller);
@@ -321,8 +321,7 @@ Agent.prototype.CArequestParticipant = function (conversation, executeRequest) {
     })
     .tell(cb);
 };
-
-// Conversation Patterns End ====================================================
+// Communicative Acts End ================================================
 
 // Helper
 Agent.prototype.sendToSniffer = function (obj) {

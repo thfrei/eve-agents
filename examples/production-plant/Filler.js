@@ -48,7 +48,6 @@ Promise.all([Agent.ready]).then(function () {
   function checkParameters (message, context) {
     return new Promise( (resolve, reject) => {
       develop('#checkParams', message, context);
-      //let book = _.find(Agent.books, {title: message.title});
       if(true) {
         let offer = {price: Math.random()};
         develop('offer:', offer);
@@ -121,6 +120,13 @@ Promise.all([Agent.ready]).then(function () {
     console.log('taking down...');
     Agent.deRegister();
     setTimeout(process.exit, 500); // wait for deregistering complete
+  });
+
+  process.once('SIGUSR2', function () {
+    Agent.deRegister();
+    setTimeout(function () {
+      process.kill(process.pid, 'SIGUSR2');
+    },500);
   });
 
 }).catch(function(err){console.log('exe',err)});
