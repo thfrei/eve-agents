@@ -137,12 +137,12 @@ Agent.prototype.request = function(to, method, params) {
 
 // Communicative Acts ===================================================
 // cfp
-Agent.prototype.CAcfp = function(seller, conversation, objective){
-  console.log('CAcfp', seller);
-  this.sendToSniffer({to: seller, from: this.id, type: 'CAcfp', conversation: conversation, objective: objective});
+Agent.prototype.CAcfp = function(participant, conversation, objective){
+  console.log('CAcfp', participant);
+  this.sendToSniffer({to: participant, from: this.id, type: 'CAcfp', conversation: conversation, objective: objective});
 
   return new Promise( (resolve, reject) => {
-    this.tell(seller, conversation)
+    this.tell(participant, conversation)
       .tell(function (message, context) {
         return objective;
       })
@@ -151,18 +151,22 @@ Agent.prototype.CAcfp = function(seller, conversation, objective){
         return message;
       })
       .tell(function (message, context) {
-        if (message.refuse) {
-          develop('refused', message);
-          resolve(message);
-        }
         if (message.propose) {
           develop('propsed:', message);
           let ret = message.propose;
           ret.agent = context.from; //add seller name to propositions
           resolve(ret);
+        } else {
+          develop('no propose', message);
+          resolve(message);
         }
       });
-  });
+    })
+    .timeout(1000)
+    .catch(Promise.TimeoutError, function(e) {
+      console.error(`agent ${participant} is not reachable within 1000ms`);
+      return Promise.resolve({error: `Promise timeout - agent ${participant} is not reachable within 1000ms`});
+    });
 };
 
 Agent.prototype.CAcfpAcceptProposal = function(seller, conversation, objective){
