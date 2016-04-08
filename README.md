@@ -9,7 +9,7 @@ To make it comparable to other agent solutions (e.g. JADE) it implements the oft
 couple of agents are offering books, and another agents tires to buy the cheapest one comparing all seller agents offers.
 
 This proejcts contains a lot of example code. Most importantly:
-* book-trading
+* book-trading (babble)
 * production-plant
 * showcase-mi5
 
