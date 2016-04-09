@@ -100,13 +100,13 @@ Promise.all([Agent.ready]).then(function () {
         time('TIME Execute Main', Agent.timer.getTime()-start);
       }
       return Promise.resolve(done);
-    }));
+    })).catch(console.error);
     let end = Agent.timer.getTime();
     let endReal = Date.now();
     console.log('HHHHHHHHUUUUUUUUURRRRRRRRRRAAAAAAAAAAAHHHHHHHHHHHHH!!!!!!!!!!!!');
     console.log('duration: ', end-start,'ms');
     console.log('real: ', endReal-startReal, 'ms');
-  }).catch(console.error);
+  }).catch(errorHandling);
 
   function negotiate (task) {
     let conversation = 'cfp-'+task.service;
@@ -115,16 +115,7 @@ Promise.all([Agent.ready]).then(function () {
   }
 
   function negotiateTransportation(edge) {
-    return Agent.searchService('cfp-transport')
-      .then((agents) => {
-        return agents[0];
-      })
-      .then((reply) => {
-        return Agent.CAcfpAcceptProposal(reply.agent, 'cfp-transport', edge);
-      })
-      .then((reply) => {
-        return reply.inform;
-      });
+    return cfpMinPrice('cfp-transport', {parameters: edge});
   }
 
   function computeEdges (agents) {
@@ -155,6 +146,11 @@ Promise.all([Agent.ready]).then(function () {
       _.remove(propositions, (prop) => { if( prop.refuse || prop.error ) { return true; }});
       develop('clean propositions', propositions);
 
+      // Check if we can process the requested service
+      if( _.isEmpty(propositions) ) {
+        throw new Error(`service ${task.service} is not available in MAS`);
+      }
+
       // Get offer with lowest price
       let bestOffer = _.minBy(propositions, (offer) => {return offer.price});
       if(typeof bestOffer == 'undefined') {
@@ -184,3 +180,9 @@ Promise.all([Agent.ready]).then(function () {
 
 }).catch( (err) => {console.log('exe',err)} );
 
+function errorHandling(err) {
+  console.log('=============================================================================================');
+  console.log('================== ERROR in working the recipe ===============================================');
+  console.error(err);
+  console.log('=============================================================================================');
+}

@@ -35,7 +35,7 @@ Agent.execute = function(){
   return new Promise( (resolve, reject) => {
     // if position can be reached
       console.log('execute.......');
-      Agent.timer.setTimeout(resolve, 2000);
+      Agent.timer.setTimeout(resolve, 0);
   });
 };
 
