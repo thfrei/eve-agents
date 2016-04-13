@@ -100,7 +100,7 @@ Promise.all([Agent.ready]).then(function () {
         time('TIME Execute Main', Agent.timer.getTime()-start);
       }
       return Promise.resolve(done);
-    })).catch(console.error);
+    }));
     let end = Agent.timer.getTime();
     let endReal = Date.now();
     console.log('HHHHHHHHUUUUUUUUURRRRRRRRRRAAAAAAAAAAAHHHHHHHHHHHHH!!!!!!!!!!!!');
@@ -148,7 +148,7 @@ Promise.all([Agent.ready]).then(function () {
 
       // Check if we can process the requested service
       if( _.isEmpty(propositions) ) {
-        throw new Error(`service ${task.service} is not available in MAS`);
+        throw new Error(`service ${task.service} with conversation ${conversation} is not available in MAS`);
       }
 
       // Get offer with lowest price

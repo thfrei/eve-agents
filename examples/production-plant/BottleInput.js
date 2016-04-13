@@ -72,6 +72,7 @@ Promise.all([Agent.ready]).then(function () {
   function give(message, context){
     develop('#give', message, context);
     return new Promise((resolve, reject) => {
+      console.log('request-give: here you have it');
       resolve({inform: 'here you have it'});
     });
   }

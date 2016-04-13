@@ -72,6 +72,7 @@ Promise.all([Agent.ready]).then(function () {
   function take(message, context){
     develop('#take', message, context);
     return new Promise((resolve, reject) => {
+      console.log('request-take',{inform: 'i took it'});
       resolve({inform: 'i took it'});
     });
   }

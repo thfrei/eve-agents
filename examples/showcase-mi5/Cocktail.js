@@ -81,7 +81,7 @@ Promise.all([Agent.ready]).then(function () {
   Agent.events.on('registered',console.log);
 
   Agent.skillAddCAcfpParticipant('cfp-fill', checkParameters, reserve);
-  Agent.skillAdd('getPosition', function(){ return Agent.position; });
+  Agent.serviceAdd('getPosition', function(){ return Agent.position; });
 
   function checkParameters (message, context) {
     return new Promise( (resolve, reject) => {
