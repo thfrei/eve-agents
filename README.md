@@ -44,3 +44,4 @@ Notes
 (https://www.rabbitmq.com/mqtt.html) enabled.
 * A rudimentary graphical visualization is done in this project: https://github.com/thfrei/eve-agents-gui
 (with standard configuration it should work out of the box)
+* Have a look at this video to see the setup up and running: https://youtu.be/pcjF0Kuo6LY
