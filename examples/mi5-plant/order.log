@@ -1,0 +1,172 @@
+[nodemon] 1.9.1
+[nodemon] to restart at any time, enter `rs`
+[nodemon] watching: *.*
+[nodemon] starting `node Order.js`
+using mqtt: mqtt://localhost
+  time TIME Start +0ms 0 ms
+{ status: 'ok',
+  description: 'agent has been registered with services: []',
+  services: [] }
+CAcfp BottleInput72a9d8af-d880-438e-abcc-3429cf223b06
+CAcfp BottleInputb1d14ab3-69ae-406c-8f6b-357334219871
+CAcfp BottleInput4bb160f2-ae28-4413-bdcd-252820d3457c
+CAcfp Fillerb0cac302-77b9-4000-af69-6882d39585fc
+CAcfp BottleOutpute5392a72-030e-43c9-9122-870538a1a3d2
+bestOffer { price: 0.46205041860230267,
+  agent: 'BottleInput72a9d8af-d880-438e-abcc-3429cf223b06' }
+CAcfpAcceptProposal BottleInput72a9d8af-d880-438e-abcc-3429cf223b06
+bestOffer { price: 0.293049443513155,
+  agent: 'BottleOutpute5392a72-030e-43c9-9122-870538a1a3d2' }
+CAcfpAcceptProposal BottleOutpute5392a72-030e-43c9-9122-870538a1a3d2
+bestOffer { price: 0.3590230776462704,
+  agent: 'Fillerb0cac302-77b9-4000-af69-6882d39585fc' }
+CAcfpAcceptProposal Fillerb0cac302-77b9-4000-af69-6882d39585fc
+  time TIME Negotiation +94ms 94 ms
+  time TIME Start Edge - negotiateTransport +3ms 97
+CAcfpAcceptProposal HandlingRobotb6d90020-487c-46e6-a061-0b22a8229fac
+  time TIME Edge - negotiateTransport End +13ms 110
+  time TIME Execute +31ms 141
+  time TIME Execute Main +6ms 147
+  time TIME Start Edge - negotiateTransport +2ms 149
+CAcfpAcceptProposal HandlingRobotb6d90020-487c-46e6-a061-0b22a8229fac
+  time TIME Edge - negotiateTransport End +12ms 161
+  time TIME Execute +33ms 194
+HHHHHHHHUUUUUUUUURRRRRRRRRRAAAAAAAAAAAHHHHHHHHHHHHH!!!!!!!!!!!!
+duration:  195 ms
+real:  195 ms
+rs
+[nodemon] starting `node Order.js`
+using mqtt: mqtt://localhost
+  time TIME Start +0ms 0 ms
+{ status: 'ok',
+  description: 'agent has been registered with services: []',
+  services: [] }
+CAcfp BottleInput72a9d8af-d880-438e-abcc-3429cf223b06
+CAcfp BottleInputb1d14ab3-69ae-406c-8f6b-357334219871
+CAcfp BottleInput4bb160f2-ae28-4413-bdcd-252820d3457c
+CAcfp Fillerb0cac302-77b9-4000-af69-6882d39585fc
+CAcfp BottleOutpute5392a72-030e-43c9-9122-870538a1a3d2
+bestOffer { price: 0.16402707481756806,
+  agent: 'BottleInput4bb160f2-ae28-4413-bdcd-252820d3457c' }
+CAcfpAcceptProposal BottleInput4bb160f2-ae28-4413-bdcd-252820d3457c
+bestOffer { price: 0.9176197603810579,
+  agent: 'Fillerb0cac302-77b9-4000-af69-6882d39585fc' }
+CAcfpAcceptProposal Fillerb0cac302-77b9-4000-af69-6882d39585fc
+bestOffer { price: 0.011685243574902415,
+  agent: 'BottleOutpute5392a72-030e-43c9-9122-870538a1a3d2' }
+CAcfpAcceptProposal BottleOutpute5392a72-030e-43c9-9122-870538a1a3d2
+  time TIME Negotiation +100ms 100 ms
+  time TIME Start Edge - negotiateTransport +3ms 103
+CAcfpAcceptProposal HandlingRobotb6d90020-487c-46e6-a061-0b22a8229fac
+  time TIME Edge - negotiateTransport End +13ms 116
+  time TIME Execute +29ms 145
+  time TIME Execute Main +7ms 152
+  time TIME Start Edge - negotiateTransport +1ms 153
+CAcfpAcceptProposal HandlingRobotb6d90020-487c-46e6-a061-0b22a8229fac
+  time TIME Edge - negotiateTransport End +14ms 167
+  time TIME Execute +27ms 194
+HHHHHHHHUUUUUUUUURRRRRRRRRRAAAAAAAAAAAHHHHHHHHHHHHH!!!!!!!!!!!!
+duration:  195 ms
+real:  195 ms
+rs
+[nodemon] starting `node Order.js`
+using mqtt: mqtt://localhost
+  time TIME Start +0ms 0 ms
+{ status: 'ok',
+  description: 'agent has been registered with services: []',
+  services: [] }
+CAcfp BottleInput72a9d8af-d880-438e-abcc-3429cf223b06
+CAcfp BottleInputb1d14ab3-69ae-406c-8f6b-357334219871
+CAcfp BottleInput4bb160f2-ae28-4413-bdcd-252820d3457c
+CAcfp Fillerb0cac302-77b9-4000-af69-6882d39585fc
+CAcfp BottleOutpute5392a72-030e-43c9-9122-870538a1a3d2
+bestOffer { price: 0.2621273505501449,
+  agent: 'BottleInputb1d14ab3-69ae-406c-8f6b-357334219871' }
+CAcfpAcceptProposal BottleInputb1d14ab3-69ae-406c-8f6b-357334219871
+bestOffer { price: 0.5249617910012603,
+  agent: 'Fillerb0cac302-77b9-4000-af69-6882d39585fc' }
+CAcfpAcceptProposal Fillerb0cac302-77b9-4000-af69-6882d39585fc
+bestOffer { price: 0.11585318110883236,
+  agent: 'BottleOutpute5392a72-030e-43c9-9122-870538a1a3d2' }
+CAcfpAcceptProposal BottleOutpute5392a72-030e-43c9-9122-870538a1a3d2
+  time TIME Negotiation +98ms 98 ms
+  time TIME Start Edge - negotiateTransport +3ms 101
+CAcfpAcceptProposal HandlingRobotb6d90020-487c-46e6-a061-0b22a8229fac
+  time TIME Edge - negotiateTransport End +13ms 113
+  time TIME Execute +31ms 145
+  time TIME Execute Main +19ms 164
+  time TIME Start Edge - negotiateTransport +2ms 166
+CAcfpAcceptProposal HandlingRobotb6d90020-487c-46e6-a061-0b22a8229fac
+  time TIME Edge - negotiateTransport End +15ms 181
+  time TIME Execute +25ms 206
+HHHHHHHHUUUUUUUUURRRRRRRRRRAAAAAAAAAAAHHHHHHHHHHHHH!!!!!!!!!!!!
+duration:  207 ms
+real:  207 ms
+rs
+[nodemon] starting `node Order.js`
+using mqtt: mqtt://localhost
+  time TIME Start +0ms 0 ms
+{ status: 'ok',
+  description: 'agent has been registered with services: []',
+  services: [] }
+CAcfp BottleInput72a9d8af-d880-438e-abcc-3429cf223b06
+CAcfp BottleInputb1d14ab3-69ae-406c-8f6b-357334219871
+CAcfp BottleInput4bb160f2-ae28-4413-bdcd-252820d3457c
+CAcfp Fillerb0cac302-77b9-4000-af69-6882d39585fc
+CAcfp BottleOutpute5392a72-030e-43c9-9122-870538a1a3d2
+bestOffer { price: 0.07953628385439515,
+  agent: 'BottleOutpute5392a72-030e-43c9-9122-870538a1a3d2' }
+CAcfpAcceptProposal BottleOutpute5392a72-030e-43c9-9122-870538a1a3d2
+bestOffer { price: 0.8938877948094159,
+  agent: 'Fillerb0cac302-77b9-4000-af69-6882d39585fc' }
+CAcfpAcceptProposal Fillerb0cac302-77b9-4000-af69-6882d39585fc
+bestOffer { price: 0.6437019044533372,
+  agent: 'BottleInputb1d14ab3-69ae-406c-8f6b-357334219871' }
+CAcfpAcceptProposal BottleInputb1d14ab3-69ae-406c-8f6b-357334219871
+  time TIME Negotiation +85ms 86 ms
+  time TIME Start Edge - negotiateTransport +3ms 89
+CAcfpAcceptProposal HandlingRobotb6d90020-487c-46e6-a061-0b22a8229fac
+  time TIME Edge - negotiateTransport End +15ms 104
+  time TIME Execute +30ms 134
+  time TIME Execute Main +8ms 142
+  time TIME Start Edge - negotiateTransport +2ms 144
+CAcfpAcceptProposal HandlingRobotb6d90020-487c-46e6-a061-0b22a8229fac
+  time TIME Edge - negotiateTransport End +13ms 157
+  time TIME Execute +25ms 182
+HHHHHHHHUUUUUUUUURRRRRRRRRRAAAAAAAAAAAHHHHHHHHHHHHH!!!!!!!!!!!!
+duration:  183 ms
+real:  183 ms
+rs
+[nodemon] starting `node Order.js`
+using mqtt: mqtt://localhost
+  time TIME Start +0ms 0 ms
+{ status: 'ok',
+  description: 'agent has been registered with services: []',
+  services: [] }
+CAcfp BottleInput72a9d8af-d880-438e-abcc-3429cf223b06
+CAcfp BottleInputb1d14ab3-69ae-406c-8f6b-357334219871
+CAcfp BottleInput4bb160f2-ae28-4413-bdcd-252820d3457c
+CAcfp Fillerb0cac302-77b9-4000-af69-6882d39585fc
+CAcfp BottleOutpute5392a72-030e-43c9-9122-870538a1a3d2
+bestOffer { price: 0.792911377735436,
+  agent: 'BottleOutpute5392a72-030e-43c9-9122-870538a1a3d2' }
+CAcfpAcceptProposal BottleOutpute5392a72-030e-43c9-9122-870538a1a3d2
+bestOffer { price: 0.0029174857772886753,
+  agent: 'BottleInputb1d14ab3-69ae-406c-8f6b-357334219871' }
+CAcfpAcceptProposal BottleInputb1d14ab3-69ae-406c-8f6b-357334219871
+bestOffer { price: 0.9662666111253202,
+  agent: 'Fillerb0cac302-77b9-4000-af69-6882d39585fc' }
+CAcfpAcceptProposal Fillerb0cac302-77b9-4000-af69-6882d39585fc
+  time TIME Negotiation +107ms 107 ms
+  time TIME Start Edge - negotiateTransport +2ms 109
+CAcfpAcceptProposal HandlingRobotb6d90020-487c-46e6-a061-0b22a8229fac
+  time TIME Edge - negotiateTransport End +12ms 121
+  time TIME Execute +26ms 147
+  time TIME Execute Main +10ms 157
+  time TIME Start Edge - negotiateTransport +1ms 158
+CAcfpAcceptProposal HandlingRobotb6d90020-487c-46e6-a061-0b22a8229fac
+  time TIME Edge - negotiateTransport End +13ms 171
+  time TIME Execute +22ms 193
+HHHHHHHHUUUUUUUUURRRRRRRRRRAAAAAAAAAAAHHHHHHHHHHHHH!!!!!!!!!!!!
+duration:  195 ms
+real:  195 ms

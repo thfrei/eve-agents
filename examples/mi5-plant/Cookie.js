@@ -10,7 +10,7 @@ const co = require('co');
 let GeneralAgent = require('./../../agents/GeneralAgent');
 
 const agentOptions = {
-  id: 'Filler'+uuid(),
+  id: 'Cookie'+uuid(),
   DF: config.DF,
   transports: [
     {
@@ -25,16 +25,14 @@ const agentOptions = {
 let Agent = new GeneralAgent(agentOptions);
 
 Agent.liquids = [
-  {type: 'lemonade', amount: '10000'},
-  {type: 'weissbier', amount: '500'}
+  {type: 'leibniz', amount: '10000'}
 ];
 Agent.taskList = [];
 
 Agent.execute = function(){
   return new Promise( (resolve, reject) => {
     // if position can be reached
-      console.log('execute.......');
-      console.log(Agent.timer.getTime());
+      console.log('execute....... 5s');
       Agent.timer.setTimeout(resolve, 5000); //5 s for production
 
   });
@@ -43,7 +41,7 @@ Agent.execute = function(){
 Promise.all([Agent.ready]).then(function () {
   Agent.events.on('registered',console.log);
 
-  Agent.serviceAddCAcfpParticipant('cfp-fill', checkParameters, reserve);
+  Agent.serviceAddCAcfpParticipant('cfp-cookie', checkParameters, reserve);
 
   function checkParameters (message, context) {
     return new Promise( (resolve, reject) => {
@@ -64,7 +62,7 @@ Promise.all([Agent.ready]).then(function () {
     return new Promise( (resolve, reject) => {
       develop('#reserve', message, context);
 
-      let task = {taskId: 'fill-'+uuid()};
+      let task = {taskId: 'cookie-'+uuid()};
       Agent.taskList.push(task);
 
       if(true) {
